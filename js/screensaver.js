@@ -115,6 +115,8 @@ function createText() {
     const textInput = document.getElementById('textInput').value;
     const isText = document.getElementById('text').checked;
     const size = parseInt(document.getElementById('sizeSlider').value) / 10;
+    const resolution = parseInt(document.getElementById('resSlider').value);
+    const colorPicker = document.getElementById('colorPicker').value;
     
     let displayText;
     if (isText) {
@@ -126,11 +128,15 @@ function createText() {
     
     console.log('Creating text:', displayText, 'size:', size);
     
+    // Calculate extrusion depth based on resolution slider
+    // Resolution: 0 = shallow (0.2x), 50 = default (0.4x), 100 = deep (0.8x)
+    const extrusionDepth = size * (0.2 + (resolution / 100) * 0.6);
+    
     // Create extruded text geometry - this gives the authentic Windows 95/98 look!
     const textGeometry = new THREE.TextGeometry(displayText, {
         font: font,
         size: size,
-        height: size * 0.4,           // Extrusion depth
+        height: extrusionDepth,        // Extrusion depth controlled by resolution slider
         curveSegments: 12,             // Smoothness of curves
         bevelEnabled: true,            // Enable beveling for rounded edges
         bevelThickness: size * 0.05,   // Bevel depth
@@ -145,15 +151,18 @@ function createText() {
     // Center the geometry
     textGeometry.center();
     
-    // Create materials - front face and side/bevel faces
+    // Create materials with color from color picker
+    const frontColor = new THREE.Color(colorPicker);
+    const sideColor = new THREE.Color(colorPicker).multiplyScalar(0.5); // Darker version
+    
     const materials = [
         new THREE.MeshPhongMaterial({ 
-            color: 0xff6060,      // Front face - red
-            shininess: 100,       // Glossy surface
-            specular: 0x444444    // Specular highlights
+            color: frontColor,        // Front face - user selected color
+            shininess: 100,           // Glossy surface
+            specular: 0x444444        // Specular highlights
         }),
         new THREE.MeshPhongMaterial({ 
-            color: 0x8b0000,      // Side/bevel faces - darker red
+            color: sideColor,         // Side/bevel faces - darker version
             shininess: 30 
         })
     ];
@@ -198,6 +207,20 @@ function animateScreensaver() {
     const vFOV = camera.fov * Math.PI / 180;
     const visibleHeight = 2 * Math.tan(vFOV / 2) * distance;
     const visibleWidth = visibleHeight * camera.aspect;
+    
+    // Log bounds every 60 frames (about once per second)
+    if (Math.random() < 0.016) {
+        console.log('Visible bounds:', {
+            width: visibleWidth,
+            height: visibleHeight,
+            boundsX: visibleWidth / 2,
+            boundsY: visibleHeight / 2,
+            currentX: x,
+            currentY: y,
+            currentZ: z,
+            distance: distance
+        });
+    }
     
     // Use full visible area as bounds (text can go to edges)
     const boundsX = visibleWidth / 2;
