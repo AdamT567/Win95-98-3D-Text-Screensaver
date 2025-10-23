@@ -134,11 +134,14 @@ function createText() {
 
 // Animation loop
 function animateScreensaver() {
-    if (!document.getElementById('previewOverlay').classList.contains('active')) {
+    const overlay = document.getElementById('previewOverlay');
+    
+    if (!overlay || !overlay.classList.contains('active')) {
         return;
     }
     
-    if (!textMesh) {
+    // Wait for font to load and text to be created
+    if (!textMesh || !font) {
         animationId = requestAnimationFrame(animateScreensaver);
         return;
     }
