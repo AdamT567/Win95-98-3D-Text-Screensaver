@@ -21,12 +21,24 @@ function updatePreview() {
         window.currentSpin = spinStyle;
     }
     
-    // Update screensaver if it's initialized
+    // Update screensaver text (this recreates the mesh with new settings)
     if (window.screensaverInitialized && window.updateScreensaverText) {
         window.updateScreensaverText();
     }
     
     // Don't update URL automatically anymore - only on OK button
+}
+
+// Update for live preview when adjusting settings
+function updateLivePreview() {
+    updatePreview();
+    
+    // If preview is currently showing, update it live
+    if (document.getElementById('previewOverlay').classList.contains('active')) {
+        if (window.screensaverInitialized && window.updateScreensaverText) {
+            window.updateScreensaverText();
+        }
+    }
 }
 
 // Generate URL for OBS
@@ -127,15 +139,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize URL
     updateUrl();
     
-    // Input event listeners
-    document.getElementById('textInput').addEventListener('input', updatePreview);
-    document.getElementById('text').addEventListener('change', updatePreview);
-    document.getElementById('time').addEventListener('change', updatePreview);
-    document.getElementById('sizeSlider').addEventListener('input', updatePreview);
-    document.getElementById('speedSlider').addEventListener('input', updatePreview);
-    document.getElementById('resSlider').addEventListener('input', updatePreview);
-    document.getElementById('spinStyle').addEventListener('change', updatePreview);
-    document.getElementById('colorPicker').addEventListener('input', updatePreview);
+    // Input event listeners - use updateLivePreview for settings that need immediate visual feedback
+    document.getElementById('textInput').addEventListener('input', updateLivePreview);
+    document.getElementById('text').addEventListener('change', updateLivePreview);
+    document.getElementById('time').addEventListener('change', updateLivePreview);
+    document.getElementById('sizeSlider').addEventListener('input', updateLivePreview);
+    document.getElementById('speedSlider').addEventListener('input', updatePreview); // Speed doesn't need mesh recreation
+    document.getElementById('resSlider').addEventListener('input', updateLivePreview);
+    document.getElementById('spinStyle').addEventListener('change', updatePreview); // Spin doesn't need mesh recreation
+    document.getElementById('colorPicker').addEventListener('input', updateLivePreview);
     
     // Button event listeners
     document.getElementById('previewBtn').addEventListener('click', handlePreview);
