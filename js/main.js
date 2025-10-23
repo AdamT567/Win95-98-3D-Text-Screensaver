@@ -128,10 +128,20 @@ function closePreview() {
 
 // Texture window management
 let selectedGradient = null;
+let isDragging = false;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
 
 function openTextureWindow() {
     console.log('Opening texture window');
-    document.getElementById('textureWindow').style.display = 'block';
+    const textureWindow = document.getElementById('textureWindow');
+    textureWindow.style.display = 'block';
+    
+    // Reset selection
+    selectedGradient = null;
+    document.querySelectorAll('input[name="gradientSelect"]').forEach(radio => {
+        radio.checked = false;
+    });
 }
 
 function closeTextureWindow() {
@@ -142,11 +152,6 @@ function closeTextureWindow() {
 function selectGradient(gradientType) {
     console.log('Selected gradient:', gradientType);
     selectedGradient = gradientType;
-    // Highlight selected button
-    document.querySelectorAll('.gradient-button').forEach(btn => {
-        btn.style.outline = 'none';
-    });
-    event.target.style.outline = '3px solid #000080';
 }
 
 function applyTexture() {
@@ -161,11 +166,55 @@ function applyTexture() {
     closeTextureWindow();
 }
 
+function cancelTexture() {
+    console.log('Cancelled texture selection');
+    closeTextureWindow();
+}
+
+// Make texture window draggable
+function makeDraggable() {
+    const titleBar = document.getElementById('textureWindowTitleBar');
+    const textureWindow = document.getElementById('textureWindow');
+    
+    if (!titleBar || !textureWindow) return;
+    
+    titleBar.addEventListener('mousedown', function(e) {
+        if (e.target.tagName === 'BUTTON' || e.target.tagName === 'IMG') return;
+        
+        isDragging = true;
+        const rect = textureWindow.getBoundingClientRect();
+        dragOffsetX = e.clientX - rect.left;
+        dragOffsetY = e.clientY - rect.top;
+        
+        titleBar.style.cursor = 'grabbing';
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        
+        const newX = e.clientX - dragOffsetX;
+        const newY = e.clientY - dragOffsetY;
+        
+        textureWindow.style.left = newX + 'px';
+        textureWindow.style.top = newY + 'px';
+        textureWindow.style.transform = 'none'; // Remove centering transform
+    });
+    
+    document.addEventListener('mouseup', function() {
+        if (isDragging) {
+            isDragging = false;
+            const titleBar = document.getElementById('textureWindowTitleBar');
+            if (titleBar) titleBar.style.cursor = 'move';
+        }
+    });
+}
+
 // Make functions globally accessible
 window.openTextureWindow = openTextureWindow;
 window.closeTextureWindow = closeTextureWindow;
 window.selectGradient = selectGradient;
 window.applyTexture = applyTexture;
+window.cancelTexture = cancelTexture;
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
@@ -179,6 +228,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize URL
     updateUrl();
+    
+    // Initialize draggable texture window
+    makeDraggable();
     
     // Input event listeners - use updateLivePreview for settings that need immediate visual feedback
     document.getElementById('textInput').addEventListener('input', updateLivePreview);
