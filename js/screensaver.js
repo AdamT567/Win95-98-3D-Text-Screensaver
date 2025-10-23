@@ -302,9 +302,14 @@ function updateScreensaverText() {
     }
 }
 
-// Export functions to window object
+// Export functions and variables to window object
 window.initScreensaver = initScreensaver;
 window.startScreensaverAnimation = startScreensaverAnimation;
 window.stopScreensaverAnimation = stopScreensaverAnimation;
 window.resetScreensaverPosition = resetScreensaverPosition;
 window.updateScreensaverText = updateScreensaverText;
+
+// Export textMesh reference for debugging
+Object.defineProperty(window, 'textMesh', {
+    get: function() { return textMesh; }
+});
