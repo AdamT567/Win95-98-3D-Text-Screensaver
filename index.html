@@ -123,8 +123,19 @@ document.querySelectorAll('.ui input, .ui select').forEach(el=>{
   el.addEventListener('change', refresh);
 });
 document.getElementById('previewBtn').onclick = refresh;
-document.getElementById('copyBtn').onclick = async ()=>{
-  await navigator.clipboard.writeText($share.value);
+document.getElementById('copyBtn').onclick = async () => {
+  const url = document.getElementById('share').value;
+  try {
+    await navigator.clipboard.writeText(url);
+    document.getElementById('copyBtn').textContent = 'Copied';
+    setTimeout(()=>document.getElementById('copyBtn').textContent='Copy OBS URL',1200);
+  } catch {
+    // fallback: select + prompt
+    document.getElementById('share').focus();
+    document.getElementById('share').select();
+    try { document.execCommand('copy'); } catch {}
+    alert('URL copied. If not, paste from the field.');
+  }
 };
 </script>
 </body>
