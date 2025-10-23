@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Win98 3D Text – Player</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+html,body{height:100%;margin:0;background:#008080;overflow:hidden}
+#c{position:fixed;inset:0;display:block;background:#000}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/FontLoader.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/geometries/TextGeometry.min.js"></script>
+<script>
+const params = Object.fromEntries(new URLSearchParams(location.search).entries());
+
+// parse numeric
+params.size  = parseFloat(params.size  ?? '1.2');
+params.speed = parseFloat(params.speed ?? '1.0');
+
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+
+const camera = new THREE.PerspectiveCamera(45, 2, 0.1, 100);
+camera.position.set(0, 0, 12);
+
+const light = new THREE.DirectionalLight(0xffffff, 1.0);
+light.position.set(3, 5, 8);
+scene.add(light, new THREE.AmbientLight(0xffffff, 0.25));
+
+const material = (()=>{
+  if(params.surface === 'texture' && params.texture){
+    const tex = new THREE.TextureLoader().load(params.texture);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    return new THREE.MeshPhongMaterial({map: tex});
+  }
+  const col = new THREE.Color(params.color || '#ffffff');
+  return new THREE.MeshPhongMaterial({color: col, shininess: 40});
+})();
+
+let mesh;
+
+function loadFontAndBuild(){
+  // Use a bundled JSON font for reliability. Fallback to helvetiker.
+  const loader = new THREE.FontLoader();
+  loader.load('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/fonts/helvetiker_regular.typeface.json', font=>{
+    const geo = new THREE.TextGeometry(params.text || 'Be Right Back', {
+      font,
+      size: 1.5 * params.size,
+      height: 0.5,
+      curveSegments: 8,
+      bevelEnabled: true,
+      bevelThickness: 0.05,
+      bevelSize: 0.03,
+      bevelSegments: 2
+    });
+    geo.computeBoundingBox();
+    geo.center();
+    mesh = new THREE.Mesh(geo, material);
+    scene.add(mesh);
+  });
+}
+
+function onResize(){
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  if(canvas.width !== w || canvas.height !== h){
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+}
+window.addEventListener('resize', onResize);
+
+let t0 = performance.now();
+function animate(now){
+  requestAnimationFrame(animate);
+  onResize();
+  if(mesh){
+    const t = (now - t0) * 0.001 * params.speed;
+
+    switch(params.spin){
+      case 'spin':
+        mesh.rotation.y = t;
+        break;
+      case 'bounce':
+        mesh.rotation.y = t * 0.6;
+        mesh.position.y = Math.sin(t) * 0.5;
+        break;
+      case 'random':
+        mesh.rotation.x = Math.sin(t*0.9)*0.6;
+        mesh.rotation.y = Math.cos(t*1.1)*0.8;
+        mesh.rotation.z = Math.sin(t*0.7)*0.4;
+        break;
+      default: // wobble
+        mesh.rotation.y = t * 0.8;
+        mesh.rotation.x = Math.sin(t)*0.2;
+        mesh.rotation.z = Math.cos(t*0.5)*0.1;
+    }
+  }
+  renderer.render(scene, camera);
+}
+loadFontAndBuild();
+animate();
+</script>
+</body>
+</html>
