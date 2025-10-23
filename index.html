@@ -1,4 +1,15 @@
-<!DOCTYPE html>
+<script>
+        let animationId;
+        let scene, camera, renderer, textMesh, font;
+        let x = 0, y = 0, z = 0;
+        let velocityX = 2, velocityY = 1.5, velocityZ = 1;
+        let currentSpin = 'wobble';
+        let rotation = 0;
+        let seesawAngle = 0;
+        let wobbleRotation = { x: 0, y: 0, z: 0 };
+
+        // Inline Helvetiker font data (subset for common characters)
+        const helvetikerFont = {"glyphs":{"A":{"ha":722,"x_min":9,"x_max":689.5,"o":"m 689 0 l 563 0 l 510 171 l 198 171 l 145 0 l 19 0 l 295 716 l 412 716 m 475 280 l 421 460 q 413 488 417 474 q 407 513 410 501 q 401 537 403 525 q 394 563 398 549 q 381 513 389 541 q 370 471 377 493 q 359 431 364 450 q 348 393 353 411 l 295 280 m 233 280 l 354 656 l 475 280 "},"B":{"ha":722,"x_min":76,"x_max":666,"o":"m 76 0 l 76 716 l 411 716 q 522 700 478 716 q 598 655 565 684 q 643 585 631 626 q 655 497 655 544 q 647 433 655 463 q 623 382 639 403 q 584 342 607 360 q 532 314 561 324 q 593 288 568 306 q 642 246 619 270 q 675 186 665 222 q 686 110 686 151 q 674 15 686 57 q 638 -55 663 -28 q 574 -99 613 -82 q 480 -116 535 -116 m 216 606 l 216 389 l 407 389 q 478 397 448 389 q 529 421 508 406 q 561 462 550 436 q 572 521 572 488 q 562 579 572 554 q 532 620 551 604 q 481 645 512 636 q 407 655 449 655 m 216 110 l 437 110 q 509 118 479 110 q 562 143 540 127 q 595 188 584 160 q 606 253 606 217 q 596 316 606 288 q 565 362 585 344 q 513 390 545 379 q 437 401 480 401 l 216 401 "},"C":{"ha":722,"x_min":44,"x_max":675,"o":"m 675 206 l 552 206 q 535 148 547 174 q 500 103 524 123 q 445 72 475 83 q 371 61 414 61 q 273 82 315 61 q 200 143 231 103 q 154 242 169 184 q 140 374 140 300 q 154 504 140 445 q 198 602 169 562 q 270 664 228 641 q 371 688 312 688 q 445 677 414 688 q 502 646 477 667 q 540 600 527 625 q 560 542 553 575 l 683 542 q 650 658 674 607 q 573 744 627 710 q 465 802 520 779 q 337 826 410 826 q 186 797 252 826 q 73 717 121 769 q 3 591 26 665 q -25 420 -20 517 q 6 242 -20 321 q 81 109 32 164 q 198 21 129 55 q 347 -13 267 -13 q 481 10 421 -13 q 586 73 540 33 q 657 167 632 113 q 675 286 682 221 "},"D":{"ha":722,"x_min":76,"x_max":677,"o":"m 76 0 l 76 716 l 343 716 q 490 694 428 716 q 600 634 553 672 q 670 533 647 597 q 693 389 693 469 q 670 241 693 306 q 599 135 647 177 q 485 68 552 94 q 330 43 419 43 m 216 110 l 317 110 q 427 126 380 110 q 508 172 475 142 q 560 250 541 202 q 578 362 578 299 q 561 474 578 426 q 510 554 543 522 q 428 602 477 586 q 313 618 380 618 l 216 618 "},"E":{"ha":667,"x_min":76,"x_max":621,"o":"m 76 0 l 76 716 l 604 716 l 604 606 l 216 606 l 216 414 l 579 414 l 579 304 l 216 304 l 216 110 l 621 110 l 621 0 "},"F":{"ha":611,"x_min":76,"x_max":587,"o":"m 76 0 l 76 716 l 570 716 l 570 606 l 216 606 l 216 414 l 545 414 l 545 304 l 216 304 l 216 0 "},"G":{"ha":778,"x_min":44,"x_max":713,"o":"m 713 0 l 573 0 l 573 57 q 512 13 547 30 q 438 -7 477 -3 q 359 -13 399 -10 q 277 -13 319 -13 q 132 14 194 -13 q 23 92 70 42 q -40 215 -24 143 q -63 380 -56 288 q -38 548 -56 471 q 30 676 -20 625 q 143 762 80 727 q 293 797 207 797 q 653 716 653 797 l 653 606 q 591 656 632 639 q 510 682 551 674 q 424 695 469 691 q 345 699 379 699 q 249 676 290 699 q 179 614 208 654 q 134 518 149 575 q 120 389 120 462 q 134 256 120 313 q 177 157 149 199 q 249 93 206 116 q 352 70 292 70 q 429 78 394 70 q 493 102 464 87 q 543 139 521 117 q 579 187 565 161 l 579 300 l 378 300 l 378 410 l 713 410 "},"H":{"ha":722,"x_min":76,"x_max":646,"o":"m 76 0 l 76 716 l 216 716 l 216 414 l 506 414 l 506 716 l 646 716 l 646 0 l 506 0 l 506 304 l 216 304 l 216 0 "},"I":{"ha":278,"x_min":84,"x_max":194,"o":"m 84 0 l 84 716 l 194 716 l 194 0 "},"J":{"ha":556,"x_min":22,"x_max":502,"o":"m 502 716 l 502 204 q 487 85 502 137 q 445 -4 473 33 q 373 -66 418 -41 q 268 -91 329 -91 q 156 -74 207 -91 q 73 -24 105 -58 q 22 54 40 10 q 9 154 4 98 l 142 154 q 152 91 142 116 q 181 50 162 67 q 227 26 200 34 q 290 19 254 19 q 356 30 328 19 q 402 63 384 41 q 429 117 420 85 q 439 192 439 149 l 439 716 "},"K":{"ha":722,"x_min":76,"x_max":721,"o":"m 76 0 l 76 716 l 216 716 l 216 404 l 515 716 l 670 716 l 409 449 l 721 0 l 562 0 l 324 333 l 216 232 l 216 0 "},"L":{"ha":611,"x_min":76,"x_max":583,"o":"m 76 0 l 76 716 l 216 716 l 216 110 l 583 110 l 583 0 "},"M":{"ha":833,"x_min":73,"x_max":760,"o":"m 73 0 l 73 716 l 235 716 l 416 174 l 597 716 l 760 716 l 760 0 l 630 0 l 630 565 l 449 0 l 384 0 l 203 565 l 203 0 "},"N":{"ha":722,"x_min":76,"x_max":646,"o":"m 76 0 l 76 716 l 224 716 l 506 204 l 506 716 l 646 716 l 646 0 l 498 0 l 216 514 l 216 0 "},"O":{"ha":778,"x_min":44,"x_max":734,"o":"m 734 360 q 708 189 734 266 q 634 62 683 113 q 519 -16 586 12 q 369 -45 453 -45 q 217 -16 283 -45 q 102 62 152 12 q 28 189 53 113 q 3 360 3 266 q 28 531 3 454 q 102 658 53 607 q 217 736 152 708 q 369 765 283 765 q 519 736 453 765 q 634 658 586 708 q 708 531 683 607 q 734 360 734 454 m 389 655 q 291 632 334 655 q 219 569 248 609 q 173 472 190 529 q 156 350 156 415 q 173 228 156 285 q 219 131 190 171 q 291 68 248 91 q 389 45 334 45 q 487 68 444 45 q 559 131 530 91 q 605 228 588 171 q 622 350 622 285 q 605 472 622 415 q 559 569 588 529 q 487 632 530 609 q 389 655 444 655 "},"P":{"ha":667,"x_min":76,"x_max":625,"o":"m 76 0 l 76 716 l 408 716 q 515 701 469 716 q 596 660 561 687 q 648 591 632 634 q 664 497 664 549 q 648 402 664 445 q 596 332 632 360 q 515 290 561 304 q 408 276 469 276 l 216 276 l 216 0 m 216 606 l 216 386 l 378 386 q 452 393 420 386 q 507 414 484 400 q 543 452 530 428 q 556 507 556 476 q 543 561 556 537 q 507 599 530 585 q 452 620 484 614 q 378 627 420 627 "},"Q":{"ha":778,"x_min":44,"x_max":738,"o":"m 734 360 q 709 195 734 269 q 638 68 684 120 q 528 -12 592 15 q 387 -42 465 -39 l 308 -137 l 213 -79 l 281 2 q 147 38 208 9 q 50 118 87 67 q -12 241 13 170 q -36 403 -37 313 q -12 565 -37 493 q 50 688 13 637 q 147 769 87 739 q 278 807 208 799 q 389 765 333 799 q 497 688 445 732 q 583 578 549 645 q 643 446 617 512 q 681 302 669 380 q 689 151 693 224 l 738 151 l 738 41 l 693 41 q 683 9 689 23 q 672 -16 678 -5 l 655 -16 q 662 17 659 -3 q 668 55 665 37 q 672 92 671 73 q 675 125 673 110 q 630 62 660 87 q 560 15 600 37 q 472 -13 519 -6 l 529 -92 l 435 -151 l 369 -56 q 217 -16 287 -39 q 102 62 152 12 q 28 189 53 113 q 3 360 3 266 q 28 531 3 454 q 102 658 53 607 q 217 736 152 708 q 369 765 283 765 q 519 736 453 765 q 634 658 586 708 q 708 531 683 607 q 734 360 734 454 m 389 655 q 291 632 334 655 q 219 569 248 609 q 173 472 190 529 q 156 350 156 415 q 173 228 156 285 q 219 131 190 171 q 291 68 248 91 q 389 45 334 45 q 487 68 444 45 q 559 131 530 91 q 605 228 588 171 q 622 350 622 285 q 605 472 622 415 q 559 569 588 529 q 487 632 530 609 q 389 655 444 655 "},"R":{"ha":722,"x_min":76,"x_max":677,"o":"m 76 0 l 76 716 l 403 716 q 509 702 464 716 q 589 663 555 689 q 640 597 624 637 q 657 507 657 557 q 648 438 657 470 q 621 381 638 406 q 578 335 604 356 q 519 302 552 314 q 570 277 549 293 q 612 242 591 261 q 644 196 633 222 q 662 136 655 170 l 713 0 l 570 0 l 532 110 q 516 155 527 135 q 489 188 505 175 q 449 207 473 200 q 392 214 425 214 l 216 214 l 216 0 m 216 606 l 216 324 l 371 324 q 447 331 414 324 q 503 352 479 338 q 539 390 527 366 q 551 445 551 414 q 539 500 551 476 q 503 538 527 524 q 447 560 479 552 q 371 568 414 568 l 216 568 "},"S":{"ha":667,"x_min":49,"x_max":620,"o":"m 620 189 q 604 103 620 142 q 560 37 589 64 q 492 -7 531 10 q 406 -33 453 -24 q 303 -42 359 -42 q 164 -22 225 -42 q 60 26 103 -3 q -7 102 17 56 q -42 206 -31 148 l 95 206 q 109 146 100 172 q 138 104 118 121 q 184 78 159 87 q 248 70 210 70 q 319 77 287 70 q 373 99 351 84 q 406 134 394 114 q 418 181 418 154 q 408 224 418 205 q 376 260 398 243 q 324 290 354 277 q 252 319 294 303 q 173 351 210 335 q 104 391 136 368 q 53 446 72 414 q 25 521 34 479 q 16 620 16 564 q 31 705 16 667 q 74 771 47 744 q 140 817 102 799 q 222 846 178 835 q 316 857 266 857 q 444 838 387 857 q 541 787 501 820 q 605 712 581 755 q 634 616 629 669 l 497 616 q 483 675 493 649 q 456 717 473 700 q 415 743 439 734 q 359 752 391 752 q 294 745 323 752 q 244 724 265 738 q 213 691 223 710 q 203 645 203 672 q 212 603 203 621 q 242 569 221 585 q 292 540 263 552 q 361 512 321 528 q 444 479 401 496 q 517 439 487 462 q 572 385 548 417 q 606 314 597 354 q 615 225 615 274 q 620 189 615 207 "},"T":{"ha":611,"x_min":14,"x_max":597,"o":"m 597 606 l 361 606 l 361 0 l 250 0 l 250 606 l 14 606 l 14 716 l 597 716 "},"U":{"ha":722,"x_min":72,"x_max":651,"o":"m 651 716 l 651 235 q 634 119 651 172 q 586 28 618 67 q 507 -31 555 -11 q 395 -52 459 -52 q 279 -31 327 -52 q 198 28 232 -11 q 148 119 165 67 q 131 235 131 172 l 131 716 l 271 716 l 271 236 q 281 159 271 193 q 310 103 291 125 q 359 69 330 81 q 428 57 388 57 q 496 69 467 57 q 545 103 526 81 q 574 159 565 125 q 584 236 584 193 l 584 716 "},"V":{"ha":667,"x_min":14,"x_max":654,"o":"m 654 716 l 404 0 l 262 0 l 14 716 l 151 716 l 297 214 q 311 168 304 191 q 323 125 317 145 q 333 168 328 145 q 347 214 339 191 l 517 716 "},"W":{"ha":944,"x_min":16,"x_max":929,"o":"m 929 716 l 736 0 l 586 0 l 472 477 l 356 0 l 207 0 l 16 716 l 153 716 l 254 192 q 264 142 259 167 q 274 95 269 117 q 284 142 279 117 q 294 192 289 167 l 409 716 l 535 716 l 650 192 q 660 142 655 167 q 670 95 665 117 q 680 142 675 117 q 690 192 685 167 l 792 716 "},"X":{"ha":667,"x_min":14,"x_max":655,"o":"m 655 0 l 489 0 l 330 268 l 176 0 l 14 0 l 248 384 l 33 716 l 199 716 l 338 483 l 472 716 l 633 716 l 417 378 "},"Y":{"ha":667,"x_min":7,"x_max":660,"o":"m 660 716 l 388 269 l 388 0 l 279 0 l 279 269 l 7 716 l 143 716 l 333 388 l 524 716 "},"Z":{"ha":611,"x_min":25,"x_max":578,"o":"m 578 0 l 25 0 l 25 106 l 413 606 l 39 606 l 39 716 l 570 716 l 570 610 l 182 110 l 578 110 "},"a":{"ha":556,"x_min":46,"x_max":519,"o":"m 519 0 l 431 0 l 431 73 q 386 27 413 45 q 329 -2 360 10 q 261 -20 298 -15 q 187 -26 224 -26 q 107 -14 143 -26 q 48 17 71 -3 q 10 63 24 38 q -4 127 -4 89 q 13 198 -4 168 q 64 250 30 228 q 146 283 98 272 q 261 295 194 295 l 406 295 l 406 321 q 398 379 406 354 q 372 419 390 404 q 328 442 354 434 q 266 451 302 451 q 196 441 226 451 q 144 413 167 431 q 110 372 122 396 q 96 320 98 348 l 9 320 q 27 404 14 367 q 76 467 40 442 q 152 509 112 493 q 254 526 192 526 q 351 514 308 526 q 423 478 395 502 q 469 418 452 454 q 485 333 485 382 l 485 107 q 488 68 485 84 q 497 41 491 51 q 513 26 504 30 q 538 22 522 22 l 538 -74 q 513 -78 527 -76 q 487 -80 499 -80 q 433 -72 456 -80 q 396 -48 411 -65 q 373 -11 382 -32 q 360 36 364 10 m 406 200 l 281 200 q 211 193 242 200 q 158 175 180 187 q 122 145 136 163 q 108 101 108 128 q 117 61 108 78 q 144 32 126 44 q 186 15 162 21 q 240 9 210 9 q 311 20 280 9 q 365 52 342 32 q 398 102 387 72 q 410 165 410 132 "},"b":{"ha":611,"x_min":65,"x_max":562,"o":"m 65 0 l 65 760 l 152 760 l 152 455 q 189 491 167 476 q 236 517 211 506 q 290 532 260 527 q 351 538 319 538 q 451 517 406 538 q 528 458 497 497 q 577 368 560 419 q 595 251 595 317 q 577 133 595 184 q 527 43 559 82 q 450 -16 496 5 q 345 -37 405 -37 q 287 -30 315 -37 q 238 -10 259 -23 q 198 23 217 3 q 167 68 178 43 l 167 0 m 167 252 q 182 182 167 213 q 223 128 197 151 q 284 94 249 106 q 361 83 319 83 q 437 98 404 83 q 493 141 471 113 q 527 206 515 168 q 539 290 539 244 q 527 373 539 336 q 493 437 515 410 q 437 479 471 465 q 361 493 404 493 q 284 481 319 493 q 223 447 249 470 q 182 393 197 424 q 167 320 167 361 "},"c":{"ha":556,"x_min":46,"x_max":516,"o":"m 516 176 q 497 102 511 135 q 449 45 483 69 q 375 6 414 21 q 276 -9 335 -9 q 167 11 215 -9 q 83 71 120 31 q 29 166 46 111 q 12 291 12 221 q 29 416 12 361 q 82 511 46 471 q 166 571 119 551 q 276 591 214 591 q 371 577 329 591 q 445 538 413 563 q 495 477 477 513 q 518 397 513 441 l 431 397 q 414 448 427 426 q 379 487 402 470 q 330 512 357 503 q 269 521 303 521 q 194 507 226 521 q 140 466 162 493 q 106 401 118 438 q 94 313 94 364 q 106 224 94 262 q 139 158 118 187 q 192 116 161 130 q 266 102 223 102 q 328 110 300 102 q 378 134 357 119 q 414 172 399 149 q 435 224 429 195 "},"d":{"ha":611,"x_min":49,"x_max":545,"o":"m 545 0 l 458 0 l 458 73 q 421 27 443 45 q 372 -2 399 10 q 315 -20 346 -15 q 253 -26 285 -26 q 153 -5 198 -26 q 76 55 107 16 q 27 145 44 94 q 9 262 9 196 q 27 380 9 329 q 77 470 44 431 q 154 530 109 509 q 260 551 198 551 q 318 545 290 551 q 367 525 346 538 q 407 491 388 511 q 438 445 427 471 l 438 760 l 525 760 l 525 0 m 438 259 q 424 189 438 220 q 384 135 411 158 q 323 101 358 113 q 246 90 288 90 q 170 104 203 90 q 114 147 136 119 q 80 212 92 174 q 68 296 68 250 q 80 379 68 342 q 114 444 92 416 q 170 487 136 473 q 246 501 203 501 q 323 489 288 501 q 384 455 358 478 q 424 401 411 432 q 438 328 438 370 "},"e":{"ha":556,"x_min":42,"x_max":517,"o":"m 517 216 l 130 216 q 142 149 132 178 q 174 98 151 120 q 224 65 197 76 q 291 54 252 54 q 365 69 333 54 q 423 112 397 84 l 502 57 q 453 1 482 25 q 390 -33 424 -23 q 314 -57 356 -44 q 230 -70 272 -70 q 126 -50 173 -70 q 49 2 80 -30 q 0 89 18 34 q -18 204 -18 144 q -1 319 -18 264 q 48 408 15 373 q 125 467 81 443 q 228 491 169 491 q 331 467 286 491 q 405 403 375 444 q 452 311 435 363 q 470 196 469 259 m 131 291 l 382 291 q 371 349 380 322 q 343 394 363 376 q 299 423 323 411 q 242 435 276 435 q 185 424 211 435 q 140 394 159 414 q 109 349 121 375 q 94 291 98 323 "},"f":{"ha":333,"x_min":21,"x_max":407,"o":"m 407 760 l 407 677 q 370 681 389 680 q 334 683 351 683 q 287 677 308 683 q 253 656 266 670 q 233 619 241 642 q 226 565 226 596 l 226 485 l 393 485 l 393 410 l 226 410 l 226 0 l 139 0 l 139 410 l 21 410 l 21 485 l 139 485 l 139 578 q 150 652 139 619 q 182 705 160 685 q 234 737 204 725 q 305 749 264 749 q 344 747 325 749 q 382 743 363 745 q 418 738 401 741 q 450 732 435 735 l 450 657 q 429 662 440 660 q 407 666 418 665 "},"g":{"ha":611,"x_min":49,"x_max":545,"o":"m 545 485 l 545 -49 q<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -404,23 +415,18 @@
             height: 100vh;
             background: black;
             display: none;
-            justify-content: center;
-            align-items: center;
             z-index: 9999;
             cursor: pointer;
         }
 
         .preview-overlay.active {
-            display: flex;
+            display: block;
         }
 
-        .preview-text {
-            color: white;
-            font-weight: bold;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
-            position: absolute;
-            white-space: nowrap;
-            font-family: Arial, sans-serif;
+        #canvas3d {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
 
         /* Copy URL Section */
@@ -636,7 +642,7 @@
 
         <!-- Preview Overlay -->
         <div class="preview-overlay" id="previewOverlay" onclick="closePreview()">
-            <div class="preview-text" id="previewText">Goblinz Rule</div>
+            <canvas id="canvas3d"></canvas>
         </div>
     </div>
 
@@ -650,37 +656,178 @@
         <div class="taskbar-clock" id="clock">12:00 PM</div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         let animationId;
-        let x, y, dx, dy;
+        let scene, camera, renderer, textMesh;
+        let x = 0, y = 0, z = 0;
+        let velocityX = 2, velocityY = 1.5, velocityZ = 1;
         let currentSpin = 'wobble';
         let rotation = 0;
         let seesawAngle = 0;
+        let wobbleRotation = { x: 0, y: 0, z: 0 };
 
-        function updateClock() {
-            const now = new Date();
-            const hours = now.getHours() % 12 || 12;
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
-            document.getElementById('clock').textContent = `${hours}:${minutes} ${ampm}`;
+        function initThreeJS() {
+            const canvas = document.getElementById('canvas3d');
+            
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000);
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 100;
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            // Lights - classic 3-point lighting for that 90s look
+            const ambientLight = new THREE.AmbientLight(0x404040, 1);
+            scene.add(ambientLight);
+            
+            const keyLight = new THREE.DirectionalLight(0xffffff, 1);
+            keyLight.position.set(5, 10, 10);
+            scene.add(keyLight);
+            
+            const fillLight = new THREE.DirectionalLight(0x8080ff, 0.4);
+            fillLight.position.set(-5, 0, 5);
+            scene.add(fillLight);
+            
+            const backLight = new THREE.DirectionalLight(0xffffff, 0.6);
+            backLight.position.set(0, -10, -10);
+            scene.add(backLight);
+            
+            // Load font and create text
+            const loader = new THREE.FontLoader();
+            loader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', function(loadedFont) {
+                font = loadedFont;
+                createText();
+            });
+        }
+
+        function createText() {
+            if (textMesh) {
+                scene.remove(textMesh);
+                textMesh.geometry.dispose();
+                textMesh.material.dispose();
+            }
+            
+            if (!font) return;
+            
+            const textInput = document.getElementById('textInput').value;
+            const isText = document.getElementById('text').checked;
+            const size = parseInt(document.getElementById('sizeSlider').value) / 10;
+            
+            let displayText;
+            if (isText) {
+                displayText = textInput || 'Goblinz Rule';
+            } else {
+                const now = new Date();
+                displayText = now.toLocaleTimeString();
+            }
+            
+            // Create extruded text geometry - this is the key to the 3D effect!
+            const textGeometry = new THREE.TextGeometry(displayText, {
+                font: font,
+                size: size,
+                height: size * 0.4, // Extrusion depth
+                curveSegments: 12,
+                bevelEnabled: true,
+                bevelThickness: size * 0.05,
+                bevelSize: size * 0.03,
+                bevelOffset: 0,
+                bevelSegments: 5
+            });
+            
+            textGeometry.center();
+            
+            // Create gradient-like material for that classic 90s look
+            const materials = [
+                new THREE.MeshPhongMaterial({ color: 0xff6060, shininess: 100, specular: 0x444444 }), // front
+                new THREE.MeshPhongMaterial({ color: 0x8b0000, shininess: 30 }) // side/bevel
+            ];
+            
+            textMesh = new THREE.Mesh(textGeometry, materials);
+            scene.add(textMesh);
+            
+            // Initialize random position
+            x = (Math.random() - 0.5) * 60;
+            y = (Math.random() - 0.5) * 40;
+            z = (Math.random() - 0.5) * 30;
+        }
+
+        function animate3D() {
+            const overlay = document.getElementById('previewOverlay');
+            
+            if (!overlay.classList.contains('active')) {
+                return;
+            }
+            
+            const speed = document.getElementById('speedSlider').value / 5;
+            
+            // Update position
+            x += velocityX * speed;
+            y += velocityY * speed;
+            z += velocityZ * speed * 0.5;
+            
+            // Bounce off edges (adjust bounds based on camera)
+            const boundsX = 40;
+            const boundsY = 30;
+            const boundsZ = 20;
+            
+            if (x > boundsX || x < -boundsX) {
+                velocityX = -velocityX;
+                x = Math.max(-boundsX, Math.min(boundsX, x));
+            }
+            
+            if (y > boundsY || y < -boundsY) {
+                velocityY = -velocityY;
+                y = Math.max(-boundsY, Math.min(boundsY, y));
+            }
+            
+            if (z > boundsZ || z < -boundsZ) {
+                velocityZ = -velocityZ;
+                z = Math.max(-boundsZ, Math.min(boundsZ, z));
+            }
+            
+            textMesh.position.set(x, y, z);
+            
+            // Apply spin style
+            if (currentSpin === 'wobble') {
+                wobbleRotation.x += 0.02;
+                wobbleRotation.y += 0.03;
+                wobbleRotation.z += 0.01;
+                
+                textMesh.rotation.x = Math.sin(wobbleRotation.x) * 0.8;
+                textMesh.rotation.y = Math.sin(wobbleRotation.y) * 1.2;
+                textMesh.rotation.z = Math.sin(wobbleRotation.z) * 0.4;
+            } else if (currentSpin === 'see-saw') {
+                seesawAngle += 0.03;
+                textMesh.rotation.z = Math.sin(seesawAngle) * 0.5;
+                textMesh.rotation.x = 0;
+                textMesh.rotation.y += 0.01;
+            } else if (currentSpin === 'none') {
+                // No rotation
+            }
+            
+            // Update time if showing time
+            if (document.getElementById('time').checked) {
+                // Recreate text every second
+                const now = new Date();
+                const seconds = now.getSeconds();
+                if (seconds !== (window.lastSecond || 0)) {
+                    window.lastSecond = seconds;
+                    createText();
+                }
+            }
+            
+            renderer.render(scene, camera);
+            animationId = requestAnimationFrame(animate3D);
         }
 
         function updatePreview() {
-            const textInput = document.getElementById('textInput').value;
-            const isText = document.getElementById('text').checked;
-            const size = document.getElementById('sizeSlider').value;
             const spinStyle = document.getElementById('spinStyle').value;
-            
-            const previewText = document.getElementById('previewText');
-            
-            if (isText) {
-                previewText.textContent = textInput || 'Goblinz Rule';
-            } else {
-                const now = new Date();
-                previewText.textContent = now.toLocaleTimeString();
-            }
-            
-            previewText.style.fontSize = size + 'px';
             
             // Determine actual spin style
             if (spinStyle === 'random') {
@@ -690,80 +837,33 @@
                 currentSpin = spinStyle;
             }
             
+            if (textMesh) {
+                createText();
+            }
+            
             updateUrl();
         }
 
-        function animate() {
-            const previewText = document.getElementById('previewText');
-            const speed = document.getElementById('speedSlider').value;
-            const overlay = document.getElementById('previewOverlay');
+        function initializePosition() {
+            x = (Math.random() - 0.5) * 60;
+            y = (Math.random() - 0.5) * 40;
+            z = (Math.random() - 0.5) * 30;
             
-            if (!overlay.classList.contains('active')) {
-                return;
-            }
+            const angle = Math.random() * Math.PI * 2;
+            velocityX = Math.cos(angle) * 2;
+            velocityY = Math.sin(angle) * 2;
+            velocityZ = (Math.random() - 0.5) * 2;
             
-            // Update position
-            x += dx * (speed / 5);
-            y += dy * (speed / 5);
-            
-            const rect = previewText.getBoundingClientRect();
-            const containerWidth = window.innerWidth;
-            const containerHeight = window.innerHeight;
-            
-            // Bounce off edges
-            if (x <= 0 || x + rect.width >= containerWidth) {
-                dx = -dx;
-                x = Math.max(0, Math.min(x, containerWidth - rect.width));
-            }
-            
-            if (y <= 0 || y + rect.height >= containerHeight) {
-                dy = -dy;
-                y = Math.max(0, Math.min(y, containerHeight - rect.height));
-            }
-            
-            // Apply transformations based on spin style
-            let transform = `translate(${x}px, ${y}px)`;
-            
-            if (currentSpin === 'wobble') {
-                rotation += 2;
-                const wobbleX = Math.sin(rotation * 0.05) * 45;
-                const wobbleY = Math.cos(rotation * 0.03) * 30;
-                const wobbleZ = Math.sin(rotation * 0.04) * 15;
-                transform += ` perspective(400px) rotateY(${wobbleX}deg) rotateX(${wobbleY}deg) rotateZ(${wobbleZ}deg)`;
-            } else if (currentSpin === 'see-saw') {
-                seesawAngle += 1.5;
-                const angle = Math.sin(seesawAngle * 0.05) * 30;
-                transform += ` rotate(${angle}deg)`;
-            }
-            // 'none' has no additional transformation
-            
-            previewText.style.transform = transform;
-            
-            // Update time if showing time
-            if (document.getElementById('time').checked) {
-                const now = new Date();
-                previewText.textContent = now.toLocaleTimeString();
-            }
-            
-            animationId = requestAnimationFrame(animate);
+            wobbleRotation = { x: 0, y: 0, z: 0 };
+            seesawAngle = 0;
         }
 
-        function initializePosition() {
-            const previewText = document.getElementById('previewText');
-            const containerWidth = window.innerWidth;
-            const containerHeight = window.innerHeight;
-            
-            // Random starting position
-            x = Math.random() * (containerWidth - 200);
-            y = Math.random() * (containerHeight - 100);
-            
-            // Random direction
-            const angle = Math.random() * Math.PI * 2;
-            dx = Math.cos(angle) * 2;
-            dy = Math.sin(angle) * 2;
-            
-            rotation = 0;
-            seesawAngle = 0;
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours() % 12 || 12;
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+            document.getElementById('clock').textContent = `${hours}:${minutes} ${ampm}`;
         }
 
         function updateUrl() {
@@ -812,9 +912,14 @@
 
         document.getElementById('previewBtn').addEventListener('click', function() {
             updatePreview();
+            if (!renderer) {
+                initThreeJS();
+            } else {
+                createText();
+            }
             initializePosition();
             document.getElementById('previewOverlay').classList.add('active');
-            animate();
+            animate3D();
         });
 
         function closePreview() {
@@ -856,14 +961,24 @@
         // If loaded with parameters (OBS mode), go straight to fullscreen
         if (urlParams.toString()) {
             setTimeout(() => {
+                initThreeJS();
                 initializePosition();
                 document.getElementById('previewOverlay').classList.add('active');
                 // Hide desktop elements in OBS mode
                 document.querySelector('.desktop').style.display = 'none';
                 document.querySelector('.taskbar').style.display = 'none';
-                animate();
+                animate3D();
             }, 100);
         }
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        });
     </script>
 </body>
 </html>
