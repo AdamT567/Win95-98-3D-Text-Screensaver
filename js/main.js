@@ -15,7 +15,7 @@ function updatePreview() {
     
     // Determine actual spin style (handle random)
     if (spinStyle === 'random') {
-        const styles = ['none', 'see-saw', 'wobble'];
+        const styles = ['none', 'see-saw', 'spin', 'wobble'];
         window.currentSpin = styles[Math.floor(Math.random() * styles.length)];
     } else {
         window.currentSpin = spinStyle;
