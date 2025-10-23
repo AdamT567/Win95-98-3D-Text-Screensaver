@@ -183,7 +183,7 @@ function animateScreensaver() {
         return;
     }
     
-    const speed = parseInt(speedSlider.value) / 6; // Divided by 6 instead of 3 for 50% slower
+    const speed = parseInt(speedSlider.value) / 6;
     
     // Update position
     x += velocityX * speed;
@@ -191,7 +191,7 @@ function animateScreensaver() {
     z += velocityZ * speed * 0.5;
     
     // Bounce off invisible bounds
-    const boundsX = 60;
+    const boundsX = 40;
     const boundsY = 40;
     const boundsZ = 30;
     
