@@ -75,17 +75,31 @@ function resetToDefaults() {
 
 // Preview button handler
 function handlePreview() {
+    console.log('Preview button clicked');
+    console.log('Screensaver initialized?', window.screensaverInitialized);
+    console.log('textMesh exists?', window.textMesh !== undefined);
+    
     updatePreview();
     
     // Show overlay
     document.getElementById('previewOverlay').classList.add('active');
     
-    // Reset position and start animation
+    // Check if screensaver is ready
     if (window.screensaverInitialized) {
+        console.log('Starting preview animation');
         window.resetScreensaverPosition();
         window.startScreensaverAnimation();
     } else {
-        console.log('Screensaver still initializing, animation will start when ready');
+        console.log('Screensaver still initializing, will start when ready');
+        // Wait for initialization
+        const checkInterval = setInterval(() => {
+            if (window.screensaverInitialized) {
+                console.log('Screensaver ready, starting animation');
+                clearInterval(checkInterval);
+                window.resetScreensaverPosition();
+                window.startScreensaverAnimation();
+            }
+        }, 100);
     }
 }
 
