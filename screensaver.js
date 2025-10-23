@@ -59,6 +59,11 @@ function initScreensaver() {
             font = loadedFont;
             createText();
             window.screensaverInitialized = true;
+            
+            // Start animation immediately after text is created
+            if (document.getElementById('previewOverlay').classList.contains('active')) {
+                startScreensaverAnimation();
+            }
         },
         undefined,
         function(error) {
@@ -174,7 +179,11 @@ function animateScreensaver() {
     }
     
     // Apply position
-    textMesh.position.set(x, y, z);
+    if (textMesh && textMesh.position) {
+        textMesh.position.set(x, y, z);
+    } else {
+        return;
+    }
     
     // Apply rotation based on spin style
     if (window.currentSpin === 'wobble') {
