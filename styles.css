@@ -1,17 +1,101 @@
-:root{--ui-bg:#0b0b0b;--ui-fg:#eaeaea;--ui-ac:#2b6cb0}
-html,body{height:100%;margin:0}
-body{background:#000;color:var(--ui-fg);font:14px system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-#c{position:fixed;inset:0;display:block;width:100vw;height:100vh}
+:root {
+  --ui-bg:#0b0b0b;
+  --ui-fg:#eaeaea;
+  --ui-ac:#2b6cb0
+}
+
+html, body {
+  height:100%;
+  margin:0
+}
+
+body {
+  background:#000;
+  color:var(--ui-fg);
+  font:14px system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif
+}
+
+#c {
+  position:fixed;
+  inset:0;
+  display:block;
+  width:100vw;
+  height:100vh
+}
 
 /* panel */
-.ui{position:fixed;top:12px;left:12px;max-width:320px;background:rgba(11,11,11,.9);
-  border:1px solid #222;border-radius:12px;padding:12px;backdrop-filter:blur(6px)}
-.ui h1{margin:0 0 8px 0;font-size:16px}
-.ui label{display:flex;justify-content:space-between;gap:8px;margin:6px 0}
-.ui input[type="text"],.ui input[type="number"],.ui select{
-  flex:1;background:#111;color:#eee;border:1px solid #333;border-radius:8px;padding:6px 8px}
-.ui input[type="color"]{width:48px;height:28px;border:none;background:transparent;padding:0}
-.ui details{margin-top:6px;border-top:1px solid #222;padding-top:6px}
-.row{display:flex;gap:8px;margin-top:8px}
-button{background:var(--ui-ac);color:#fff;border:none;border-radius:8px;padding:8px 10px;cursor:pointer}
-button:hover{filter:brightness(1.1)}
+.ui {
+  position:fixed;
+  top:12px;
+  left:12px;
+  max-width:320px;
+  background:rgba(11,11,11,.9);
+  border:1px solid #222;
+  border-radius:12px;
+  padding:12px;
+  backdrop-filter:blur(6px)
+}
+.ui h1 {
+  margin:0 0 8px 0;
+  font-size:16px
+}
+
+.ui label {
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  margin:6px 0
+}
+
+.ui input[type="text"], .ui input[type="number"], .ui select {
+  flex:1;
+  background:#111;
+  color:#eee;
+  border:1px solid #333;
+  border-radius:8px;
+  padding:6px 8px
+}
+
+.ui input[type="color"] {
+  width:48px;
+  height:28px;
+  border:none;
+  background:transparent;
+  padding:0
+}
+
+.ui details {
+  margin-top:6px;
+  border-top:1px solid #222;
+  padding-top:6px
+}
+
+.row {
+  display:flex;
+  gap:8px;
+  margin-top:8px
+}
+
+button {
+  background:var(--ui-ac);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  padding:8px 10px;
+  cursor:pointer
+}
+
+button:hover {
+  filter:brightness(1.1)
+}
+
+.ui {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+#c {
+  pointer-events: none;
+  z-index: 0;
+}
