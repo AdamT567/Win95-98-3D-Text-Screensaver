@@ -26,7 +26,7 @@ function updatePreview() {
         window.updateScreensaverText();
     }
     
-    updateUrl();
+    // Don't update URL automatically anymore - only on OK button
 }
 
 // Generate URL for OBS
@@ -36,12 +36,16 @@ function updateUrl() {
     const size = document.getElementById('sizeSlider').value;
     const speed = document.getElementById('speedSlider').value;
     const spinStyle = document.getElementById('spinStyle').value;
+    const color = document.getElementById('colorPicker').value;
+    const resolution = document.getElementById('resSlider').value;
     
     const params = new URLSearchParams({
         text: isText ? (textInput || 'Goblinz Rule') : 'time',
         size: size,
         speed: speed,
-        spin: spinStyle
+        spin: spinStyle,
+        color: color,
+        resolution: resolution
     });
     
     const url = window.location.origin + window.location.pathname + '?' + params.toString();
@@ -66,10 +70,11 @@ function copyUrl() {
 function resetToDefaults() {
     document.getElementById('textInput').value = 'Goblinz Rule';
     document.getElementById('text').checked = true;
-    document.getElementById('sizeSlider').value = 60;
-    document.getElementById('speedSlider').value = 3;
+    document.getElementById('sizeSlider').value = 42;
+    document.getElementById('speedSlider').value = 5;
     document.getElementById('resSlider').value = 50;
     document.getElementById('spinStyle').value = 'wobble';
+    document.getElementById('colorPicker').value = '#ff6060';
     updatePreview();
 }
 
@@ -128,7 +133,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('time').addEventListener('change', updatePreview);
     document.getElementById('sizeSlider').addEventListener('input', updatePreview);
     document.getElementById('speedSlider').addEventListener('input', updatePreview);
+    document.getElementById('resSlider').addEventListener('input', updatePreview);
     document.getElementById('spinStyle').addEventListener('change', updatePreview);
+    document.getElementById('colorPicker').addEventListener('input', updatePreview);
     
     // Button event listeners
     document.getElementById('previewBtn').addEventListener('click', handlePreview);
@@ -157,6 +164,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (urlParams.has('spin')) {
             document.getElementById('spinStyle').value = urlParams.get('spin');
+        }
+        if (urlParams.has('color')) {
+            document.getElementById('colorPicker').value = urlParams.get('color');
+        }
+        if (urlParams.has('resolution')) {
+            document.getElementById('resSlider').value = urlParams.get('resolution');
         }
         
         updatePreview();
