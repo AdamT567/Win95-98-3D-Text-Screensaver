@@ -112,10 +112,21 @@ const $preview = document.getElementById('preview');
 
 function refresh(){
   const v = readUI();
-  const url = encodeURL(v);
-  $share.value = url;
-  $preview.src = url;
+  const p = new URLSearchParams(v);
+  const url = new URL('player.html', location.href);
+  url.search = p.toString();
+  document.getElementById('share').value = url.toString();
+  document.getElementById('preview').src = url.toString();
 }
+document.getElementById('copyBtn').onclick = async () => {
+  const url = document.getElementById('share').value;
+  try {
+    await navigator.clipboard.writeText(url);
+  } catch {
+    document.getElementById('share').select();
+    document.execCommand('copy');
+  }
+};
 refresh();
 
 document.querySelectorAll('.ui input, .ui select').forEach(el=>{
