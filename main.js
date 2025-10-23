@@ -1,4 +1,3 @@
-
 // Main UI logic and event handlers
 
 // Clock functionality
@@ -23,7 +22,7 @@ function updatePreview() {
     }
     
     // Update screensaver if it's initialized
-    if (window.updateScreensaverText) {
+    if (window.screensaverInitialized && window.updateScreensaverText) {
         window.updateScreensaverText();
     }
     
@@ -78,16 +77,16 @@ function resetToDefaults() {
 function handlePreview() {
     updatePreview();
     
-    // Initialize screensaver if not already done
-    if (!window.screensaverInitialized) {
-        initScreensaver();
-    } else {
-        window.updateScreensaverText();
-    }
-    
-    window.resetScreensaverPosition();
+    // Show overlay
     document.getElementById('previewOverlay').classList.add('active');
-    window.startScreensaverAnimation();
+    
+    // Reset position and start animation
+    if (window.screensaverInitialized) {
+        window.resetScreensaverPosition();
+        window.startScreensaverAnimation();
+    } else {
+        console.log('Screensaver still initializing, animation will start when ready');
+    }
 }
 
 // Close preview
@@ -101,6 +100,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Clock
     updateClock();
     setInterval(updateClock, 1000);
+    
+    // IMPORTANT: Initialize screensaver immediately on page load
+    console.log('Initializing screensaver on page load...');
+    initScreensaver();
     
     // Initialize URL
     updateUrl();
@@ -144,17 +147,19 @@ document.addEventListener('DOMContentLoaded', function() {
         
         updatePreview();
         
-        // Go straight to fullscreen for OBS
-        setTimeout(() => {
-            initScreensaver();
-            window.resetScreensaverPosition();
-            document.getElementById('previewOverlay').classList.add('active');
-            
-            // Hide desktop elements in OBS mode
-            document.querySelector('.desktop').style.display = 'none';
-            document.querySelector('.taskbar').style.display = 'none';
-            
-            window.startScreensaverAnimation();
+        // Wait for screensaver to be ready, then go fullscreen for OBS
+        const waitForInit = setInterval(() => {
+            if (window.screensaverInitialized) {
+                clearInterval(waitForInit);
+                window.resetScreensaverPosition();
+                document.getElementById('previewOverlay').classList.add('active');
+                
+                // Hide desktop elements in OBS mode
+                document.querySelector('.desktop').style.display = 'none';
+                document.querySelector('.taskbar').style.display = 'none';
+                
+                window.startScreensaverAnimation();
+            }
         }, 100);
     }
 });
