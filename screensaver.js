@@ -6,14 +6,20 @@ let velocityX = 2, velocityY = 1.5, velocityZ = 1;
 let wobbleRotation = { x: 0, y: 0, z: 0 };
 let seesawAngle = 0;
 let animationId = null;
-let isInitializing = false;
 
 window.screensaverInitialized = false;
 window.currentSpin = 'wobble';
 
 // Initialize Three.js scene
 function initScreensaver() {
+    console.log('Starting screensaver initialization...');
+    
     const canvas = document.getElementById('canvas3d');
+    
+    if (!canvas) {
+        console.error('Canvas not found');
+        return;
+    }
     
     // Scene setup
     scene = new THREE.Scene();
@@ -52,21 +58,25 @@ function initScreensaver() {
     backLight.position.set(0, -10, -10);
     scene.add(backLight);
     
+    console.log('Scene, camera, renderer, and lights initialized');
+    
     // Load font and create text
     const loader = new THREE.FontLoader();
+    console.log('Loading font...');
     loader.load(
         'https://threejs.org/examples/fonts/helvetiker_bold.typeface.json',
         function(loadedFont) {
+            console.log('Font loaded successfully!');
             font = loadedFont;
             createText();
             window.screensaverInitialized = true;
-            
-            // Start animation immediately after text is created
-            if (document.getElementById('previewOverlay').classList.contains('active')) {
-                startScreensaverAnimation();
+            console.log('Screensaver fully initialized and ready');
+        },
+        function(progress) {
+            if (progress.total > 0) {
+                console.log('Loading font:', (progress.loaded / progress.total * 100).toFixed(2) + '%');
             }
         },
-        undefined,
         function(error) {
             console.error('Error loading font:', error);
         }
@@ -78,6 +88,8 @@ function initScreensaver() {
 
 // Create 3D extruded text
 function createText() {
+    console.log('Creating text mesh...');
+    
     // Remove existing text mesh
     if (textMesh) {
         scene.remove(textMesh);
@@ -112,6 +124,8 @@ function createText() {
         displayText = now.toLocaleTimeString();
     }
     
+    console.log('Creating text:', displayText, 'size:', size);
+    
     // Create extruded text geometry - this gives the authentic Windows 95/98 look!
     const textGeometry = new THREE.TextGeometry(displayText, {
         font: font,
@@ -144,6 +158,9 @@ function createText() {
     // Create mesh
     textMesh = new THREE.Mesh(textGeometry, materials);
     scene.add(textMesh);
+    
+    console.log('Text mesh created successfully:', textMesh);
+    console.log('textMesh.position:', textMesh.position);
 }
 
 // Animation loop
@@ -154,13 +171,19 @@ function animateScreensaver() {
         return;
     }
     
-    // Wait for font to load and text to be created
-    if (!textMesh || !font) {
+    // Safety check - wait for everything to be ready
+    if (!textMesh || !textMesh.position || !renderer || !scene || !camera) {
         animationId = requestAnimationFrame(animateScreensaver);
         return;
     }
     
-    const speed = parseInt(document.getElementById('speedSlider').value) / 3;
+    const speedSlider = document.getElementById('speedSlider');
+    if (!speedSlider) {
+        animationId = requestAnimationFrame(animateScreensaver);
+        return;
+    }
+    
+    const speed = parseInt(speedSlider.value) / 3;
     
     // Update position
     x += velocityX * speed;
