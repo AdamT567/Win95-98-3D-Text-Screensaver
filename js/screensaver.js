@@ -183,7 +183,7 @@ function animateScreensaver() {
         return;
     }
     
-    const speed = parseInt(speedSlider.value) / 10;
+    const speed = parseInt(speedSlider.value) / 20;
     
     // Update position
     x += velocityX * speed;
