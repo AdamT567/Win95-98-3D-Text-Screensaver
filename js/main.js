@@ -67,7 +67,7 @@ function resetToDefaults() {
     document.getElementById('textInput').value = 'Goblinz Rule';
     document.getElementById('text').checked = true;
     document.getElementById('sizeSlider').value = 60;
-    document.getElementById('speedSlider').value = 5;
+    document.getElementById('speedSlider').value = 3;
     document.getElementById('resSlider').value = 50;
     document.getElementById('spinStyle').value = 'wobble';
     updatePreview();
