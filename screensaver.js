@@ -6,6 +6,7 @@ let velocityX = 2, velocityY = 1.5, velocityZ = 1;
 let wobbleRotation = { x: 0, y: 0, z: 0 };
 let seesawAngle = 0;
 let animationId = null;
+let isInitializing = false;
 
 window.screensaverInitialized = false;
 window.currentSpin = 'wobble';
@@ -80,15 +81,23 @@ function createText() {
     // Remove existing text mesh
     if (textMesh) {
         scene.remove(textMesh);
-        textMesh.geometry.dispose();
-        if (Array.isArray(textMesh.material)) {
-            textMesh.material.forEach(mat => mat.dispose());
-        } else {
-            textMesh.material.dispose();
+        if (textMesh.geometry) {
+            textMesh.geometry.dispose();
         }
+        if (textMesh.material) {
+            if (Array.isArray(textMesh.material)) {
+                textMesh.material.forEach(mat => mat.dispose());
+            } else {
+                textMesh.material.dispose();
+            }
+        }
+        textMesh = null;
     }
     
-    if (!font) return;
+    if (!font || !scene) {
+        console.warn('Font or scene not ready');
+        return;
+    }
     
     // Get text settings
     const textInput = document.getElementById('textInput').value;
@@ -215,7 +224,9 @@ function animateScreensaver() {
     }
     
     // Render the scene
-    renderer.render(scene, camera);
+    if (renderer && scene && camera) {
+        renderer.render(scene, camera);
+    }
     
     // Continue animation loop
     animationId = requestAnimationFrame(animateScreensaver);
