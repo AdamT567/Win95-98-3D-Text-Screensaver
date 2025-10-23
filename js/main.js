@@ -126,6 +126,37 @@ function closePreview() {
     window.stopScreensaverAnimation();
 }
 
+// Texture window management
+let selectedGradient = null;
+
+function openTextureWindow() {
+    document.getElementById('textureWindow').style.display = 'block';
+}
+
+function closeTextureWindow() {
+    document.getElementById('textureWindow').style.display = 'none';
+}
+
+function selectGradient(gradientType) {
+    selectedGradient = gradientType;
+    // Highlight selected button
+    document.querySelectorAll('.gradient-button').forEach(btn => {
+        btn.style.outline = 'none';
+    });
+    event.target.style.outline = '3px solid #000080';
+}
+
+function applyTexture() {
+    if (selectedGradient) {
+        // Set textured radio button
+        document.getElementById('textured').checked = true;
+        // Store gradient type for use in screensaver
+        window.currentGradient = selectedGradient;
+        updateLivePreview();
+    }
+    closeTextureWindow();
+}
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
     // Clock
@@ -155,6 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('okBtn').addEventListener('click', updateUrl);
     document.getElementById('copyUrlBtn').addEventListener('click', copyUrl);
     document.getElementById('previewOverlay').addEventListener('click', closePreview);
+    document.getElementById('textureBtn').addEventListener('click', openTextureWindow);
     
     // Check if loaded with parameters (OBS mode)
     const urlParams = new URLSearchParams(window.location.search);
