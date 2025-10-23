@@ -161,4 +161,7 @@ dom("share").onclick = ()=>{
 };
 
 // ---------- Font load (local hosting works on GitHub Pages) ----------
-fontLoader.load("fonts/helvetiker_bold.typeface.json", f=>{ fontCache=f; apply(currentCfg()); });
+fontLoader.load(
+  'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/fonts/helvetiker_bold.typeface.json',
+  f => { fontCache = f; apply(currentCfg()); }
+);
