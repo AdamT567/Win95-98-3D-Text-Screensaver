@@ -193,21 +193,15 @@ function animateScreensaver() {
     y += velocityY * speed;
     z += velocityZ * speed * 0.5;
     
-    // Bounce off edges - use camera frustum to calculate actual screen bounds
-    // Calculate bounds based on camera position and FOV
+    // Calculate actual visible bounds at current Z depth
     const distance = camera.position.z - z;
     const vFOV = camera.fov * Math.PI / 180;
     const visibleHeight = 2 * Math.tan(vFOV / 2) * distance;
     const visibleWidth = visibleHeight * camera.aspect;
     
-    // Get text dimensions (approximate)
-    const textWidth = textMesh.geometry.boundingBox ? 
-        (textMesh.geometry.boundingBox.max.x - textMesh.geometry.boundingBox.min.x) : 10;
-    const textHeight = textMesh.geometry.boundingBox ? 
-        (textMesh.geometry.boundingBox.max.y - textMesh.geometry.boundingBox.min.y) : 10;
-    
-    const boundsX = (visibleWidth / 2) - (textWidth / 2);
-    const boundsY = (visibleHeight / 2) - (textHeight / 2);
+    // Use full visible area as bounds (text can go to edges)
+    const boundsX = visibleWidth / 2;
+    const boundsY = visibleHeight / 2;
     const boundsZ = 30;
     
     if (x > boundsX || x < -boundsX) {
