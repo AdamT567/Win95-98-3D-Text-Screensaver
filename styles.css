@@ -17,6 +17,7 @@ body {
 
 #c {
   position:fixed;
+  z-index:0;
   inset:0;
   display:block;
   width:100vw;
