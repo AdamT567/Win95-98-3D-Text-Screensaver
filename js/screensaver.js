@@ -139,6 +139,9 @@ function createText() {
         bevelSegments: 5               // Bevel smoothness
     });
     
+    // Compute bounding box for collision detection
+    textGeometry.computeBoundingBox();
+    
     // Center the geometry
     textGeometry.center();
     
@@ -183,16 +186,28 @@ function animateScreensaver() {
         return;
     }
     
-    const speed = parseInt(speedSlider.value) / 20;
+    const speed = parseInt(speedSlider.value) / 20; // Divided by 20 for slower, more classic speed
     
     // Update position
     x += velocityX * speed;
     y += velocityY * speed;
     z += velocityZ * speed * 0.5;
     
-    // Bounce off invisible bounds
-    const boundsX = 40;
-    const boundsY = 40;
+    // Bounce off edges - use camera frustum to calculate actual screen bounds
+    // Calculate bounds based on camera position and FOV
+    const distance = camera.position.z - z;
+    const vFOV = camera.fov * Math.PI / 180;
+    const visibleHeight = 2 * Math.tan(vFOV / 2) * distance;
+    const visibleWidth = visibleHeight * camera.aspect;
+    
+    // Get text dimensions (approximate)
+    const textWidth = textMesh.geometry.boundingBox ? 
+        (textMesh.geometry.boundingBox.max.x - textMesh.geometry.boundingBox.min.x) : 10;
+    const textHeight = textMesh.geometry.boundingBox ? 
+        (textMesh.geometry.boundingBox.max.y - textMesh.geometry.boundingBox.min.y) : 10;
+    
+    const boundsX = (visibleWidth / 2) - (textWidth / 2);
+    const boundsY = (visibleHeight / 2) - (textHeight / 2);
     const boundsZ = 30;
     
     if (x > boundsX || x < -boundsX) {
