@@ -122,6 +122,47 @@ body {
     flex-direction: column;
 }
 
+/* Display Properties Window - Responsive sizing */
+.display-properties-window {
+    width: min(480px, 35vw);
+    height: min(520px, 70vh);
+    top: min(40px, 5vh);
+    left: min(80px, 5vw);
+}
+
+/* 3D Text Setup Window - Responsive sizing */
+.text-setup-window {
+    width: min(680px, 50vw);
+    top: min(40px, 5vh);
+    left: min(580px, 40vw);
+}
+
+/* Adjust for smaller screens */
+@media (max-width: 1400px) {
+    .display-properties-window {
+        width: 32vw;
+        height: 68vh;
+    }
+    
+    .text-setup-window {
+        width: 48vw;
+        left: 35vw;
+    }
+}
+
+@media (max-width: 1200px) {
+    .display-properties-window {
+        width: 38vw;
+        height: 70vh;
+        left: 2vw;
+    }
+    
+    .text-setup-window {
+        width: 55vw;
+        left: 42vw;
+    }
+}
+
 .title-bar {
     background: linear-gradient(to right, #000080, #1084d0);
     color: white;
@@ -231,6 +272,11 @@ body {
     background: #c0c0c0;
     flex: 1;
     overflow: auto;
+}
+
+.tab-content-scrollable {
+    min-height: 400px;
+    max-height: calc(70vh - 120px);
 }
 
 /* Monitor Preview */
