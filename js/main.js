@@ -130,14 +130,17 @@ function closePreview() {
 let selectedGradient = null;
 
 function openTextureWindow() {
+    console.log('Opening texture window');
     document.getElementById('textureWindow').style.display = 'block';
 }
 
 function closeTextureWindow() {
+    console.log('Closing texture window');
     document.getElementById('textureWindow').style.display = 'none';
 }
 
 function selectGradient(gradientType) {
+    console.log('Selected gradient:', gradientType);
     selectedGradient = gradientType;
     // Highlight selected button
     document.querySelectorAll('.gradient-button').forEach(btn => {
@@ -147,6 +150,7 @@ function selectGradient(gradientType) {
 }
 
 function applyTexture() {
+    console.log('Applying texture:', selectedGradient);
     if (selectedGradient) {
         // Set textured radio button
         document.getElementById('textured').checked = true;
@@ -156,6 +160,12 @@ function applyTexture() {
     }
     closeTextureWindow();
 }
+
+// Make functions globally accessible
+window.openTextureWindow = openTextureWindow;
+window.closeTextureWindow = closeTextureWindow;
+window.selectGradient = selectGradient;
+window.applyTexture = applyTexture;
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
@@ -186,7 +196,17 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('okBtn').addEventListener('click', updateUrl);
     document.getElementById('copyUrlBtn').addEventListener('click', copyUrl);
     document.getElementById('previewOverlay').addEventListener('click', closePreview);
-    document.getElementById('textureBtn').addEventListener('click', openTextureWindow);
+    
+    // Texture button
+    const textureBtn = document.getElementById('textureBtn');
+    if (textureBtn) {
+        textureBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            openTextureWindow();
+        });
+    } else {
+        console.error('Texture button not found');
+    }
     
     // Check if loaded with parameters (OBS mode)
     const urlParams = new URLSearchParams(window.location.search);
