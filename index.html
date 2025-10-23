@@ -1,153 +1,869 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>Win98 3D Text – Setup</title>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="stylesheet" href="ui.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 98 - 3D Text Screensaver</title>
+    <style>
+        @font-face {
+            font-family: 'W95FA';
+            src: url('https://arnesava.github.io/w95font/assets/fonts/w95font.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'W95FA';
+            src: url('https://arnesava.github.io/w95font/assets/fonts/w95font-bold.woff2') format('woff2');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        body {
+            font-family: 'W95FA', 'MS Sans Serif', Arial, sans-serif;
+            font-size: 11px;
+            background: #008080;
+            overflow: hidden;
+            cursor: default;
+            -webkit-font-smoothing: none;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .desktop {
+            width: 100vw;
+            height: calc(100vh - 28px);
+            position: relative;
+        }
+
+        .icon {
+            width: 70px;
+            text-align: center;
+            color: white;
+            text-shadow: 1px 1px 2px black;
+            position: absolute;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .icon-placeholder {
+            width: 32px;
+            height: 32px;
+            margin: 0 auto 4px;
+            background: #ddd;
+            border: 1px solid #999;
+        }
+
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 28px;
+            background: #c0c0c0;
+            border-top: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 2px;
+        }
+
+        .taskbar-left {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .start-button {
+            height: 24px;
+            padding: 0 4px 0 2px;
+            background: #c0c0c0;
+            border: 2px outset #c0c0c0;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .start-button:active {
+            border-style: inset;
+        }
+
+        .taskbar-clock {
+            height: 24px;
+            padding: 0 8px;
+            background: #c0c0c0;
+            border: 1px inset white;
+            display: flex;
+            align-items: center;
+            font-size: 11px;
+            margin-right: 2px;
+        }
+
+        .window {
+            position: absolute;
+            background: #c0c0c0;
+            border-top: 2px solid #dfdfdf;
+            border-left: 2px solid #dfdfdf;
+            border-right: 2px solid #0a0a0a;
+            border-bottom: 2px solid #0a0a0a;
+            box-shadow: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-bar {
+            background: linear-gradient(to right, #000080, #1084d0);
+            color: white;
+            padding: 2px 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            cursor: move;
+            user-select: none;
+            height: 18px;
+        }
+
+        .title-bar-text {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+        }
+
+        .title-bar-controls {
+            display: flex;
+            gap: 2px;
+        }
+
+        .title-bar-controls button {
+            width: 16px;
+            height: 14px;
+            background: #c0c0c0;
+            border-top: 1px solid #ffffff;
+            border-left: 1px solid #ffffff;
+            border-right: 1px solid #0a0a0a;
+            border-bottom: 1px solid #0a0a0a;
+            cursor: pointer;
+            padding: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .title-bar-controls button img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .title-bar-controls button:active {
+            border-top: 1px solid #0a0a0a;
+            border-left: 1px solid #0a0a0a;
+            border-right: 1px solid #ffffff;
+            border-bottom: 1px solid #ffffff;
+        }
+
+        .window.inactive .title-bar {
+            background: linear-gradient(to right, #808080, #b0b0b0);
+        }
+
+        .window.inactive .title-bar-text {
+            color: #c0c0c0;
+        }
+
+        .window-body {
+            padding: 2px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 2px;
+            margin-bottom: -2px;
+            padding: 0 2px;
+            overflow: hidden;
+        }
+
+        .tab {
+            padding: 2px 8px;
+            background: #c0c0c0;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #808080;
+            border-bottom: 2px solid #808080;
+            border-radius: 3px 3px 0 0;
+            cursor: pointer;
+            user-select: none;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            background: #c0c0c0;
+            border-bottom: 2px solid #c0c0c0;
+            margin-bottom: -2px;
+            padding-bottom: 4px;
+        }
+
+        .tab-content {
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #808080;
+            border-bottom: 2px solid #808080;
+            padding: 8px;
+            background: #c0c0c0;
+            flex: 1;
+            overflow: auto;
+        }
+
+        .button {
+            padding: 3px 12px;
+            background: #c0c0c0;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #0a0a0a;
+            border-bottom: 2px solid #0a0a0a;
+            cursor: pointer;
+            min-width: 75px;
+            font-family: 'W95FA', 'MS Sans Serif', Arial, sans-serif;
+            font-size: 11px;
+            outline: none;
+            user-select: none;
+        }
+
+        .button:active {
+            border-top: 2px solid #0a0a0a;
+            border-left: 2px solid #0a0a0a;
+            border-right: 2px solid #ffffff;
+            border-bottom: 2px solid #ffffff;
+            padding: 4px 11px 2px 13px;
+        }
+
+        .button:disabled {
+            color: #808080;
+            text-shadow: 1px 1px 0px white;
+        }
+
+        select, input[type="text"] {
+            padding: 3px;
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #dfdfdf;
+            border-bottom: 2px solid #dfdfdf;
+            background: white;
+            font-family: 'W95FA', 'MS Sans Serif', Arial, sans-serif;
+            font-size: 11px;
+        }
+
+        .monitor-preview {
+            width: 184px;
+            height: 155px;
+            background: #c0c0c0;
+            margin: 12px auto;
+            position: relative;
+            padding: 0;
+        }
+
+        .monitor-frame {
+            width: 184px;
+            height: 140px;
+            background: #b0b0b0;
+            border-top: 3px solid #ffffff;
+            border-left: 3px solid #ffffff;
+            border-right: 3px solid #404040;
+            border-bottom: 3px solid #404040;
+            padding: 8px 14px 14px 14px;
+            position: relative;
+        }
+
+        .monitor-frame::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            right: 3px;
+            bottom: 3px;
+            border-top: 1px solid #e0e0e0;
+            border-left: 1px solid #e0e0e0;
+            border-right: 1px solid #606060;
+            border-bottom: 1px solid #606060;
+            pointer-events: none;
+        }
+
+        .monitor-screen {
+            width: 100%;
+            height: 100%;
+            background: #008080;
+            border: 2px solid #0a0a0a;
+            position: relative;
+        }
+
+        .monitor-stand {
+            width: 50px;
+            height: 6px;
+            background: linear-gradient(to bottom, #a0a0a0, #808080);
+            margin: 3px auto 0;
+            border-top: 1px solid #c0c0c0;
+            border-bottom: 1px solid #404040;
+        }
+
+        .monitor-base {
+            width: 90px;
+            height: 6px;
+            background: linear-gradient(to bottom, #a0a0a0, #707070);
+            margin: 1px auto 0;
+            border-top: 1px solid #c0c0c0;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .slider-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin: 4px 0;
+        }
+
+        .slider {
+            flex: 1;
+            height: 18px;
+        }
+
+        input[type="radio"], input[type="checkbox"] {
+            margin-right: 6px;
+            width: 13px;
+            height: 13px;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            justify-content: flex-end;
+        }
+
+        fieldset {
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #808080;
+            border-bottom: 2px solid #808080;
+            padding: 8px;
+            margin: 6px 0;
+            position: relative;
+        }
+
+        legend {
+            padding: 0 4px;
+            background: #c0c0c0;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 6px 0;
+            flex-wrap: wrap;
+        }
+
+        /* 3D Text Setup Window - Horizontal Layout */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .settings-grid fieldset {
+            margin: 0;
+            height: 100%;
+        }
+
+        /* Preview Overlay */
+        .preview-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: black;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            cursor: pointer;
+        }
+
+        .preview-overlay.active {
+            display: flex;
+        }
+
+        .preview-text {
+            color: white;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+            position: absolute;
+            white-space: nowrap;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Copy URL Section */
+        .url-section {
+            margin-top: 6px;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 3px;
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #dfdfdf;
+            border-bottom: 2px solid #dfdfdf;
+            background: white;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            margin-bottom: 6px;
+        }
+
+        .settings-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin: 6px 0;
+        }
+    </style>
 </head>
 <body>
-<div class="ui">
-  <h1>3D Text Setup</h1>
+    <div class="desktop">
+        <!-- Desktop Icons -->
+        <div class="icon" style="top: 10px; left: 10px;">
+            <div class="icon-placeholder"></div>
+            <div>Recycle Bin</div>
+        </div>
+        <div class="icon" style="top: 90px; left: 10px;">
+            <div class="icon-placeholder"></div>
+            <div>My Computer</div>
+        </div>
+        <div class="icon" style="top: 170px; left: 10px;">
+            <div class="icon-placeholder"></div>
+            <div>My Documents</div>
+        </div>
+        <div class="icon" style="top: 250px; left: 10px;" onclick="window.open('https://github.com/AdamT567/Win95-98-3D-Text-Screensaver', '_blank')">
+            <div class="icon-placeholder"></div>
+            <div>Github</div>
+        </div>
 
-  <label><input type="radio" name="displayMode" value="text" checked> Text</label>
-  <input id="text" value="Be Right Back" />
+        <!-- Display Properties Window -->
+        <div class="window inactive" style="width: 422px; height: 455px; top: 60px; left: 100px;">
+            <div class="title-bar">
+                <div class="title-bar-text">Display Properties</div>
+                <div class="title-bar-controls">
+                    <button><img src="help-button.png" alt="?"></button>
+                    <button><img src="close-button.png" alt="×"></button>
+                </div>
+            </div>
+            <div class="window-body">
+                <div class="tabs">
+                    <div class="tab">Background</div>
+                    <div class="tab active">Screen Saver</div>
+                    <div class="tab">Appearance</div>
+                    <div class="tab">Effects</div>
+                    <div class="tab">Web</div>
+                    <div class="tab">Settings</div>
+                </div>
+                <div class="tab-content" style="height: 340px;">
+                    <div class="monitor-preview">
+                        <div class="monitor-frame">
+                            <div class="monitor-screen"></div>
+                        </div>
+                        <div class="monitor-stand"></div>
+                        <div class="monitor-base"></div>
+                    </div>
 
-  <div class="row">
-    <label>Surface:</label>
-    <label><input type="radio" name="surface" value="solid" checked> Solid Color</label>
-    <input type="color" id="color" value="#ffffff" />
-    <label><input type="radio" name="surface" value="texture"> Textured</label>
-    <input id="texture" placeholder="Texture URL" />
-  </div>
+                    <fieldset>
+                        <legend>Screen Saver</legend>
+                        <div class="settings-row">
+                            <select style="flex: 1;">
+                                <option>3D Text</option>
+                            </select>
+                            <button class="button" disabled>Settings...</button>
+                            <button class="button" id="previewBtn">Preview</button>
+                        </div>
+                        <div class="checkbox-row">
+                            <input type="checkbox" id="password">
+                            <label for="password">Password protected</label>
+                            <button class="button">Change...</button>
+                            <span>Wait</span>
+                            <input type="text" value="10" style="width: 35px;">
+                            <span>minutes</span>
+                        </div>
+                    </fieldset>
 
-  <div class="row">
-    <label>Size</label>
-    <input id="size" type="range" min="0.5" max="3" step="0.01" value="1.2">
-  </div>
+                    <fieldset style="margin-bottom: 12px;">
+                        <legend>Energy saving features of monitor</legend>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width:48px;height:48px;background:linear-gradient(135deg, #00f 0%, #008 100%);border-radius:50%;flex-shrink:0;"></div>
+                            <div style="flex: 1;">To adjust the power settings for your monitor, click Settings.</div>
+                            <button class="button">Settings...</button>
+                        </div>
+                    </fieldset>
 
-  <div class="row">
-    <label>Speed</label>
-    <input id="speed" type="range" min="0.1" max="3" step="0.01" value="1.0">
-  </div>
+                    <div class="button-row">
+                        <button class="button">OK</button>
+                        <button class="button">Cancel</button>
+                        <button class="button">Apply</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-  <div class="row">
-    <label>Spin Style</label>
-    <select id="spin">
-      <option value="wobble">Wobble</option>
-      <option value="spin">Spin</option>
-      <option value="bounce">Bounce</option>
-      <option value="random">Random</option>
-    </select>
-  </div>
+        <!-- 3D Text Setup Window -->
+        <div class="window" style="width: 600px; top: 60px; left: 540px;">
+            <div class="title-bar">
+                <div class="title-bar-text">3D Text Setup</div>
+                <div class="title-bar-controls">
+                    <button><img src="close-button.png" alt="×"></button>
+                </div>
+            </div>
+            <div class="window-body">
+                <div style="display: flex; gap: 8px;">
+                    <div style="flex: 1;">
+                        <div class="settings-grid">
+                            <!-- Display -->
+                            <fieldset>
+                                <legend>Display</legend>
+                                <div style="margin-bottom: 6px;">
+                                    <input type="radio" name="display" id="text" checked onchange="updatePreview()">
+                                    <label for="text">Text</label>
+                                </div>
+                                <input type="text" id="textInput" value="Goblinz Rule" style="width: 100%; margin-bottom: 8px;" oninput="updatePreview()">
+                                <div>
+                                    <input type="radio" name="display" id="time" onchange="updatePreview()">
+                                    <label for="time">Time</label>
+                                </div>
+                            </fieldset>
 
-  <div class="row">
-    <label>Font</label>
-    <input id="font" value="MS Sans Serif">
-  </div>
+                            <!-- Surface Style -->
+                            <fieldset>
+                                <legend>Surface Style</legend>
+                                <div style="margin-bottom: 6px;">
+                                    <input type="radio" name="surface" id="solid" checked>
+                                    <label for="solid">Solid Color</label>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <input type="radio" name="surface" id="textured">
+                                    <label for="textured">Textured</label>
+                                    <button class="button">Texture...</button>
+                                </div>
+                            </fieldset>
 
-  <div class="row">
-    <button id="previewBtn">Preview</button>
-    <button id="copyBtn">Copy OBS URL</button>
-  </div>
+                            <!-- Size -->
+                            <fieldset>
+                                <legend>Size</legend>
+                                <div class="slider-container">
+                                    <label>Small</label>
+                                    <input type="range" class="slider" id="sizeSlider" min="24" max="120" value="60" oninput="updatePreview()">
+                                    <label>Large</label>
+                                </div>
+                            </fieldset>
 
-  <input id="share" readonly />
-</div>
+                            <!-- Speed -->
+                            <fieldset>
+                                <legend>Speed</legend>
+                                <div class="slider-container">
+                                    <label>Slow</label>
+                                    <input type="range" class="slider" id="speedSlider" min="1" max="10" value="5" oninput="updatePreview()">
+                                    <label>Fast</label>
+                                </div>
+                            </fieldset>
 
-<iframe id="preview" title="preview" style="position:fixed; inset:0; left:auto; right:12px; width:60%; height:60%; border:1px solid #222; background:#000"></iframe>
+                            <!-- Resolution -->
+                            <fieldset>
+                                <legend>Resolution</legend>
+                                <div class="slider-container">
+                                    <label>Min</label>
+                                    <input type="range" class="slider" id="resSlider" min="0" max="100" value="50">
+                                    <label>Max</label>
+                                </div>
+                            </fieldset>
 
-<script type="module">
-const DEF = {
-  displayMode:'text', text:'Be Right Back',
-  surface:'solid', color:'#ffffff', texture:'',
-  size:1.2, speed:1.0, spin:'wobble', font:'MS Sans Serif'
-};
-const KEY = 'w98_3dtext';
+                            <!-- Spin Style -->
+                            <fieldset>
+                                <legend>Spin Style</legend>
+                                <select id="spinStyle" style="width: 100%;" onchange="updatePreview()">
+                                    <option value="none">None</option>
+                                    <option value="see-saw">See-Saw</option>
+                                    <option value="wobble" selected>Wobble</option>
+                                    <option value="random">Random</option>
+                                </select>
+                            </fieldset>
+                        </div>
 
-function readUI(){
-  const v = {
-    displayMode: document.querySelector('input[name=displayMode]:checked').value,
-    text:        document.getElementById('text').value,
-    surface:     document.querySelector('input[name=surface]:checked').value,
-    color:       document.getElementById('color').value,
-    texture:     document.getElementById('texture').value.trim(),
-    size:        parseFloat(document.getElementById('size').value),
-    speed:       parseFloat(document.getElementById('speed').value),
-    spin:        document.getElementById('spin').value,
-    font:        document.getElementById('font').value
-  };
-  localStorage.setItem(KEY, JSON.stringify(v));
-  return v;
-}
-function writeUI(v){
-  document.querySelector(`input[name=displayMode][value=${v.displayMode}]`).checked = true;
-  document.getElementById('text').value = v.text;
-  document.querySelector(`input[name=surface][value=${v.surface}]`).checked = true;
-  document.getElementById('color').value = v.color;
-  document.getElementById('texture').value = v.texture || '';
-  document.getElementById('size').value = v.size;
-  document.getElementById('speed').value = v.speed;
-  document.getElementById('spin').value = v.spin;
-  document.getElementById('font').value = v.font;
-}
-function encodeURL(v){
-  const p = new URLSearchParams(v);
-  // keep numbers compact
-  p.set('size', String(v.size));
-  p.set('speed', String(v.speed));
-  const base = new URL('player.html', location.href);
-  base.search = p.toString();
-  return base.toString();
-}
-function loadSaved(){
-  try{
-    return Object.assign({}, DEF, JSON.parse(localStorage.getItem(KEY) || '{}'));
-  }catch{ return DEF; }
-}
+                        <!-- Copy URL Section -->
+                        <div class="url-section">
+                            <fieldset>
+                                <legend>OBS Browser Source URL</legend>
+                                <input type="text" class="url-input" id="urlOutput" readonly>
+                                <button class="button" id="copyUrlBtn" onclick="copyUrl()" style="width: 100%;">Copy URL to Clipboard</button>
+                            </fieldset>
+                        </div>
+                    </div>
 
-const v0 = loadSaved();
-writeUI(v0);
-const $share = document.getElementById('share');
-const $preview = document.getElementById('preview');
+                    <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 2px;">
+                        <button class="button" id="okBtn">OK</button>
+                        <button class="button" id="cancelBtn">Cancel</button>
+                        <button class="button">Choose Font...</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-function refresh(){
-  const v = readUI();
-  const p = new URLSearchParams(v);
-  const url = new URL('player.html', location.href);
-  url.search = p.toString();
-  document.getElementById('share').value = url.toString();
-  document.getElementById('preview').src = url.toString();
-}
-document.getElementById('copyBtn').onclick = async () => {
-  const url = document.getElementById('share').value;
-  try {
-    await navigator.clipboard.writeText(url);
-  } catch {
-    document.getElementById('share').select();
-    document.execCommand('copy');
-  }
-};
-refresh();
+        <!-- Preview Overlay -->
+        <div class="preview-overlay" id="previewOverlay" onclick="closePreview()">
+            <div class="preview-text" id="previewText">Goblinz Rule</div>
+        </div>
+    </div>
 
-document.querySelectorAll('.ui input, .ui select').forEach(el=>{
-  el.addEventListener('input', refresh);
-  el.addEventListener('change', refresh);
-});
-document.getElementById('previewBtn').onclick = refresh;
-document.getElementById('copyBtn').onclick = async () => {
-  const url = document.getElementById('share').value;
-  try {
-    await navigator.clipboard.writeText(url);
-    document.getElementById('copyBtn').textContent = 'Copied';
-    setTimeout(()=>document.getElementById('copyBtn').textContent='Copy OBS URL',1200);
-  } catch {
-    // fallback: select + prompt
-    document.getElementById('share').focus();
-    document.getElementById('share').select();
-    try { document.execCommand('copy'); } catch {}
-    alert('URL copied. If not, paste from the field.');
-  }
-};
-</script>
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <div class="taskbar-left">
+            <div class="start-button">
+                <span style="font-size: 14px; font-weight: bold;">▢</span> Start
+            </div>
+        </div>
+        <div class="taskbar-clock" id="clock">12:00 PM</div>
+    </div>
+
+    <script>
+        let animationId;
+        let x, y, dx, dy;
+        let currentSpin = 'wobble';
+        let rotation = 0;
+        let seesawAngle = 0;
+
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours() % 12 || 12;
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+            document.getElementById('clock').textContent = `${hours}:${minutes} ${ampm}`;
+        }
+
+        function updatePreview() {
+            const textInput = document.getElementById('textInput').value;
+            const isText = document.getElementById('text').checked;
+            const size = document.getElementById('sizeSlider').value;
+            const spinStyle = document.getElementById('spinStyle').value;
+            
+            const previewText = document.getElementById('previewText');
+            
+            if (isText) {
+                previewText.textContent = textInput || 'Goblinz Rule';
+            } else {
+                const now = new Date();
+                previewText.textContent = now.toLocaleTimeString();
+            }
+            
+            previewText.style.fontSize = size + 'px';
+            
+            // Determine actual spin style
+            if (spinStyle === 'random') {
+                const styles = ['none', 'see-saw', 'wobble'];
+                currentSpin = styles[Math.floor(Math.random() * styles.length)];
+            } else {
+                currentSpin = spinStyle;
+            }
+            
+            updateUrl();
+        }
+
+        function animate() {
+            const previewText = document.getElementById('previewText');
+            const speed = document.getElementById('speedSlider').value;
+            const overlay = document.getElementById('previewOverlay');
+            
+            if (!overlay.classList.contains('active')) {
+                return;
+            }
+            
+            // Update position
+            x += dx * (speed / 5);
+            y += dy * (speed / 5);
+            
+            const rect = previewText.getBoundingClientRect();
+            const containerWidth = window.innerWidth;
+            const containerHeight = window.innerHeight;
+            
+            // Bounce off edges
+            if (x <= 0 || x + rect.width >= containerWidth) {
+                dx = -dx;
+                x = Math.max(0, Math.min(x, containerWidth - rect.width));
+            }
+            
+            if (y <= 0 || y + rect.height >= containerHeight) {
+                dy = -dy;
+                y = Math.max(0, Math.min(y, containerHeight - rect.height));
+            }
+            
+            // Apply transformations based on spin style
+            let transform = `translate(${x}px, ${y}px)`;
+            
+            if (currentSpin === 'wobble') {
+                rotation += 2;
+                const wobbleX = Math.sin(rotation * 0.05) * 45;
+                const wobbleY = Math.cos(rotation * 0.03) * 30;
+                const wobbleZ = Math.sin(rotation * 0.04) * 15;
+                transform += ` perspective(400px) rotateY(${wobbleX}deg) rotateX(${wobbleY}deg) rotateZ(${wobbleZ}deg)`;
+            } else if (currentSpin === 'see-saw') {
+                seesawAngle += 1.5;
+                const angle = Math.sin(seesawAngle * 0.05) * 30;
+                transform += ` rotate(${angle}deg)`;
+            }
+            // 'none' has no additional transformation
+            
+            previewText.style.transform = transform;
+            
+            // Update time if showing time
+            if (document.getElementById('time').checked) {
+                const now = new Date();
+                previewText.textContent = now.toLocaleTimeString();
+            }
+            
+            animationId = requestAnimationFrame(animate);
+        }
+
+        function initializePosition() {
+            const previewText = document.getElementById('previewText');
+            const containerWidth = window.innerWidth;
+            const containerHeight = window.innerHeight;
+            
+            // Random starting position
+            x = Math.random() * (containerWidth - 200);
+            y = Math.random() * (containerHeight - 100);
+            
+            // Random direction
+            const angle = Math.random() * Math.PI * 2;
+            dx = Math.cos(angle) * 2;
+            dy = Math.sin(angle) * 2;
+            
+            rotation = 0;
+            seesawAngle = 0;
+        }
+
+        function updateUrl() {
+            const textInput = document.getElementById('textInput').value;
+            const isText = document.getElementById('text').checked;
+            const size = document.getElementById('sizeSlider').value;
+            const speed = document.getElementById('speedSlider').value;
+            const spinStyle = document.getElementById('spinStyle').value;
+            
+            const params = new URLSearchParams({
+                text: isText ? (textInput || 'Goblinz Rule') : 'time',
+                size: size,
+                speed: speed,
+                spin: spinStyle
+            });
+            
+            const url = window.location.origin + window.location.pathname + '?' + params.toString();
+            document.getElementById('urlOutput').value = url;
+        }
+
+        function copyUrl() {
+            const urlInput = document.getElementById('urlOutput');
+            urlInput.select();
+            document.execCommand('copy');
+            
+            const btn = document.getElementById('copyUrlBtn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        }
+
+        function resetToDefaults() {
+            document.getElementById('textInput').value = 'Goblinz Rule';
+            document.getElementById('text').checked = true;
+            document.getElementById('sizeSlider').value = 60;
+            document.getElementById('speedSlider').value = 5;
+            document.getElementById('resSlider').value = 50;
+            document.getElementById('spinStyle').value = 'wobble';
+            updatePreview();
+        }
+
+        document.getElementById('cancelBtn').addEventListener('click', resetToDefaults);
+        document.getElementById('okBtn').addEventListener('click', updateUrl);
+
+        document.getElementById('previewBtn').addEventListener('click', function() {
+            updatePreview();
+            initializePosition();
+            document.getElementById('previewOverlay').classList.add('active');
+            animate();
+        });
+
+        function closePreview() {
+            document.getElementById('previewOverlay').classList.remove('active');
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+        }
+
+        // Update clock every second
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Initialize URL on load
+        updateUrl();
+
+        // Check if URL has parameters and apply them
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('text')) {
+            const text = urlParams.get('text');
+            if (text === 'time') {
+                document.getElementById('time').checked = true;
+            } else {
+                document.getElementById('textInput').value = text;
+            }
+        }
+        if (urlParams.has('size')) {
+            document.getElementById('sizeSlider').value = urlParams.get('size');
+        }
+        if (urlParams.has('speed')) {
+            document.getElementById('speedSlider').value = urlParams.get('speed');
+        }
+        if (urlParams.has('spin')) {
+            document.getElementById('spinStyle').value = urlParams.get('spin');
+        }
+        
+        updatePreview();
+
+        // If loaded with parameters (OBS mode), go straight to fullscreen
+        if (urlParams.toString()) {
+            setTimeout(() => {
+                initializePosition();
+                document.getElementById('previewOverlay').classList.add('active');
+                // Hide desktop elements in OBS mode
+                document.querySelector('.desktop').style.display = 'none';
+                document.querySelector('.taskbar').style.display = 'none';
+                animate();
+            }, 100);
+        }
+    </script>
 </body>
 </html>
