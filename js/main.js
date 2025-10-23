@@ -197,15 +197,34 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('copyUrlBtn').addEventListener('click', copyUrl);
     document.getElementById('previewOverlay').addEventListener('click', closePreview);
     
-    // Texture button
+    // Texture button - with detailed debugging
+    console.log('Looking for texture button...');
     const textureBtn = document.getElementById('textureBtn');
+    console.log('Texture button found:', textureBtn);
+    
     if (textureBtn) {
+        console.log('Adding click listener to texture button');
         textureBtn.addEventListener('click', function(e) {
+            console.log('Texture button clicked!');
             e.preventDefault();
+            e.stopPropagation();
             openTextureWindow();
         });
+        
+        // Test if button can be clicked
+        console.log('Texture button is:', {
+            tagName: textureBtn.tagName,
+            className: textureBtn.className,
+            id: textureBtn.id,
+            disabled: textureBtn.disabled
+        });
     } else {
-        console.error('Texture button not found');
+        console.error('Texture button not found! Checking all buttons...');
+        const allButtons = document.querySelectorAll('.button');
+        console.log('All buttons found:', allButtons.length);
+        allButtons.forEach((btn, index) => {
+            console.log(`Button ${index}:`, btn.textContent, 'ID:', btn.id);
+        });
     }
     
     // Check if loaded with parameters (OBS mode)
