@@ -151,21 +151,83 @@ function createText() {
     // Center the geometry
     textGeometry.center();
     
-    // Create materials with color from color picker
-    const frontColor = new THREE.Color(colorPicker);
-    const sideColor = new THREE.Color(colorPicker).multiplyScalar(0.5); // Darker version
+    // Check if using gradient or solid color
+    const isTextured = document.getElementById('textured').checked;
+    let materials;
     
-    const materials = [
-        new THREE.MeshPhongMaterial({ 
-            color: frontColor,        // Front face - user selected color
-            shininess: 100,           // Glossy surface
-            specular: 0x444444        // Specular highlights
-        }),
-        new THREE.MeshPhongMaterial({ 
-            color: sideColor,         // Side/bevel faces - darker version
-            shininess: 30 
-        })
-    ];
+    if (isTextured && window.currentGradient) {
+        // Create gradient texture
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        
+        // Define gradients based on selection
+        let gradient;
+        switch(window.currentGradient) {
+            case 'rainbow':
+                // Gay Pride flag colors
+                gradient = ctx.createLinearGradient(0, 0, 512, 0);
+                gradient.addColorStop(0, '#E40303');    // Red
+                gradient.addColorStop(0.2, '#FF8C00');  // Orange
+                gradient.addColorStop(0.4, '#FFED00');  // Yellow
+                gradient.addColorStop(0.6, '#008026');  // Green
+                gradient.addColorStop(0.8, '#24408E');  // Blue
+                gradient.addColorStop(1, '#732982');    // Purple
+                break;
+            case 'trans':
+                gradient = ctx.createLinearGradient(0, 0, 0, 512);
+                gradient.addColorStop(0, '#5BCEFA');
+                gradient.addColorStop(0.25, '#F5A9B8');
+                gradient.addColorStop(0.5, '#FFFFFF');
+                gradient.addColorStop(0.75, '#F5A9B8');
+                gradient.addColorStop(1, '#5BCEFA');
+                break;
+            case 'bisexual':
+                gradient = ctx.createLinearGradient(0, 0, 0, 512);
+                gradient.addColorStop(0, '#D60270');
+                gradient.addColorStop(0.35, '#D60270');
+                gradient.addColorStop(0.5, '#9B4F96');
+                gradient.addColorStop(0.65, '#0038A8');
+                gradient.addColorStop(1, '#0038A8');
+                break;
+            case 'asexual':
+                gradient = ctx.createLinearGradient(0, 0, 0, 512);
+                gradient.addColorStop(0, '#000000');
+                gradient.addColorStop(0.25, '#A3A3A3');
+                gradient.addColorStop(0.5, '#FFFFFF');
+                gradient.addColorStop(0.75, '#800080');
+                gradient.addColorStop(1, '#800080');
+                break;
+        }
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 512, 512);
+        
+        const texture = new THREE.CanvasTexture(canvas);
+        
+        materials = new THREE.MeshPhongMaterial({
+            map: texture,
+            shininess: 100,
+            specular: 0x444444
+        });
+    } else {
+        // Solid color materials
+        const frontColor = new THREE.Color(colorPicker);
+        const sideColor = new THREE.Color(colorPicker).multiplyScalar(0.5);
+        
+        materials = [
+            new THREE.MeshPhongMaterial({ 
+                color: frontColor,
+                shininess: 100,
+                specular: 0x444444
+            }),
+            new THREE.MeshPhongMaterial({ 
+                color: sideColor,
+                shininess: 30 
+            })
+        ];
+    }
     
     // Create mesh
     textMesh = new THREE.Mesh(textGeometry, materials);
