@@ -1,50 +1,131 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>3D Text Screensaver</title>
-<link rel="stylesheet" href="styles.css" />
+<title>Win98 3D Text – Setup</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="ui.css" />
 </head>
 <body>
 <div class="ui">
-  <h1>3D Text</h1>
-  <label>Text <input id="text" type="text" value="GOBLIN TTS"></label>
-  <label>Font size (px) <input id="size" type="number" min="8" max="512" step="1" value="72"></label>
-  <label>Face color <input id="face" type="color" value="#dce8ff"></label>
-  <label>Background <input id="bg" type="color" value="#000000"></label>
-  <label>Depth (slices) <input id="depth" type="number" min="16" max="256" step="1" value="96"></label>
-  <label>Slice step (px) <input id="stepPx" type="number" min="1" max="4" step="1" value="1"></label>
-  <label>Animation
-    <select id="anim">
-      <option value="none">none</option>
-      <option value="see-saw">see saw</option>
-      <option value="wobble" selected>wobble</option>
-      <option value="random">random</option>
-    </select>
-  </label>
-  <details>
-    <summary>Motion & wobble</summary>
-    <label>Base rotation seconds <input id="rot" type="number" min="5" max="120" step="1" value="18"></label>
-    <label>Wobble amplitude (°) <input id="wobbleAmp" type="number" min="0" max="30" step="1" value="8"></label>
-    <label>Wobble Hz X <input id="wobbleHzX" type="number" min="0" max="2" step="0.01" value="0.23"></label>
-    <label>Wobble Hz Y <input id="wobbleHzY" type="number" min="0" max="2" step="0.01" value="0.17"></label>
-    <label>See-saw Hz <input id="seeSawHz" type="number" min="0.05" max="2" step="0.01" value="0.45"></label>
-    <label>Horizontal seconds <input id="mx" type="number" min="5" max="120" step="1" value="22"></label>
-    <label>Vertical seconds <input id="my" type="number" min="5" max="120" step="1" value="27"></label>
-  </details>
+  <h1>3D Text Setup</h1>
+
+  <label><input type="radio" name="displayMode" value="text" checked> Text</label>
+  <input id="text" value="Be Right Back" />
+
   <div class="row">
-    <button id="save">Save</button>
-    <button id="reset">Reset</button>
-    <button id="share">Copy share link</button>
+    <label>Surface:</label>
+    <label><input type="radio" name="surface" value="solid" checked> Solid Color</label>
+    <input type="color" id="color" value="#ffffff" />
+    <label><input type="radio" name="surface" value="texture"> Textured</label>
+    <input id="texture" placeholder="Texture URL" />
   </div>
+
+  <div class="row">
+    <label>Size</label>
+    <input id="size" type="range" min="0.5" max="3" step="0.01" value="1.2">
+  </div>
+
+  <div class="row">
+    <label>Speed</label>
+    <input id="speed" type="range" min="0.1" max="3" step="0.01" value="1.0">
+  </div>
+
+  <div class="row">
+    <label>Spin Style</label>
+    <select id="spin">
+      <option value="wobble">Wobble</option>
+      <option value="spin">Spin</option>
+      <option value="bounce">Bounce</option>
+      <option value="random">Random</option>
+    </select>
+  </div>
+
+  <div class="row">
+    <label>Font</label>
+    <input id="font" value="MS Sans Serif">
+  </div>
+
+  <div class="row">
+    <button id="previewBtn">Preview</button>
+    <button id="copyBtn">Copy OBS URL</button>
+  </div>
+
+  <input id="share" readonly />
 </div>
 
-<canvas id="c"></canvas>
+<iframe id="preview" title="preview" style="position:fixed; inset:0; left:auto; right:12px; width:60%; height:60%; border:1px solid #222; background:#000"></iframe>
 
-<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/js/loaders/FontLoader.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/js/geometries/TextGeometry.js"></script>
-<script src="app.js"></script>
+<script type="module">
+const DEF = {
+  displayMode:'text', text:'Be Right Back',
+  surface:'solid', color:'#ffffff', texture:'',
+  size:1.2, speed:1.0, spin:'wobble', font:'MS Sans Serif'
+};
+const KEY = 'w98_3dtext';
+
+function readUI(){
+  const v = {
+    displayMode: document.querySelector('input[name=displayMode]:checked').value,
+    text:        document.getElementById('text').value,
+    surface:     document.querySelector('input[name=surface]:checked').value,
+    color:       document.getElementById('color').value,
+    texture:     document.getElementById('texture').value.trim(),
+    size:        parseFloat(document.getElementById('size').value),
+    speed:       parseFloat(document.getElementById('speed').value),
+    spin:        document.getElementById('spin').value,
+    font:        document.getElementById('font').value
+  };
+  localStorage.setItem(KEY, JSON.stringify(v));
+  return v;
+}
+function writeUI(v){
+  document.querySelector(`input[name=displayMode][value=${v.displayMode}]`).checked = true;
+  document.getElementById('text').value = v.text;
+  document.querySelector(`input[name=surface][value=${v.surface}]`).checked = true;
+  document.getElementById('color').value = v.color;
+  document.getElementById('texture').value = v.texture || '';
+  document.getElementById('size').value = v.size;
+  document.getElementById('speed').value = v.speed;
+  document.getElementById('spin').value = v.spin;
+  document.getElementById('font').value = v.font;
+}
+function encodeURL(v){
+  const p = new URLSearchParams(v);
+  // keep numbers compact
+  p.set('size', String(v.size));
+  p.set('speed', String(v.speed));
+  const base = new URL('player.html', location.href);
+  base.search = p.toString();
+  return base.toString();
+}
+function loadSaved(){
+  try{
+    return Object.assign({}, DEF, JSON.parse(localStorage.getItem(KEY) || '{}'));
+  }catch{ return DEF; }
+}
+
+const v0 = loadSaved();
+writeUI(v0);
+const $share = document.getElementById('share');
+const $preview = document.getElementById('preview');
+
+function refresh(){
+  const v = readUI();
+  const url = encodeURL(v);
+  $share.value = url;
+  $preview.src = url;
+}
+refresh();
+
+document.querySelectorAll('.ui input, .ui select').forEach(el=>{
+  el.addEventListener('input', refresh);
+  el.addEventListener('change', refresh);
+});
+document.getElementById('previewBtn').onclick = refresh;
+document.getElementById('copyBtn').onclick = async ()=>{
+  await navigator.clipboard.writeText($share.value);
+};
+</script>
 </body>
 </html>
