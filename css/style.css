@@ -484,7 +484,7 @@ legend {
 
 /* Preview Overlay */
 .preview-overlay {
-    position: fixed;
+    position: fixed !important;
     top: 0;
     left: 0;
     width: 100vw;
@@ -496,19 +496,24 @@ legend {
 }
 
 .preview-overlay.active {
-    display: block;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 #canvas3d {
-    width: 100%;
-    height: 100%;
-    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+    background: red !important;  /* Temporary - to see if canvas is visible */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 /* Texture Window */
 .texture-window {
-    width: 300;
-    min-width: 300px;
+    width: 700px;
+    min-width: 700px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
