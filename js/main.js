@@ -282,6 +282,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check if loaded with parameters (OBS mode)
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.toString()) {
+        console.log('OBS mode detected with parameters:', urlParams.toString());
+        
         // Apply URL parameters
         if (urlParams.has('text')) {
             const text = urlParams.get('text');
@@ -309,18 +311,32 @@ document.addEventListener('DOMContentLoaded', function() {
         
         updatePreview();
         
+        console.log('Waiting for screensaver initialization...');
+        
         // Wait for screensaver to be ready, then go fullscreen for OBS
+        let attempts = 0;
+        const maxAttempts = 100; // 10 seconds max
         const waitForInit = setInterval(() => {
+            attempts++;
+            
             if (window.screensaverInitialized) {
+                console.log('Screensaver ready! Starting OBS mode...');
                 clearInterval(waitForInit);
-                window.resetScreensaverPosition();
-                document.getElementById('previewOverlay').classList.add('active');
                 
                 // Hide desktop elements in OBS mode
                 document.querySelector('.desktop').style.display = 'none';
                 document.querySelector('.taskbar').style.display = 'none';
                 
+                window.resetScreensaverPosition();
+                document.getElementById('previewOverlay').classList.add('active');
                 window.startScreensaverAnimation();
+                
+                console.log('OBS mode fully initialized');
+            } else if (attempts >= maxAttempts) {
+                console.error('Screensaver failed to initialize after 10 seconds');
+                clearInterval(waitForInit);
+            } else {
+                console.log(`Waiting for screensaver... (${attempts}/${maxAttempts})`);
             }
         }, 100);
     }
