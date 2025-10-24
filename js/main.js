@@ -292,26 +292,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check if loaded with parameters (OBS mode)
     const urlParams = new URLSearchParams(window.location.search);
     
-    // Debug overlay for OBS
-    const debugDiv = document.createElement('div');
-    debugDiv.style.cssText = 'position: fixed; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.7); padding: 10px; font-size: 14px; z-index: 99999;';
-    debugDiv.innerHTML = `
-        <div>URL Params: ${urlParams.toString() || 'NONE'}</div>
-        <div>Screensaver Init: ${window.screensaverInitialized}</div>
-        <div>THREE available: ${typeof THREE !== 'undefined'}</div>
-    `;
-    document.body.appendChild(debugDiv);
-    
-    // Update debug info every second
-    setInterval(() => {
-        debugDiv.innerHTML = `
-            <div>URL Params: ${urlParams.toString() || 'NONE'}</div>
-            <div>Screensaver Init: ${window.screensaverInitialized}</div>
-            <div>THREE available: ${typeof THREE !== 'undefined'}</div>
-            <div>Font loaded: ${font !== undefined && font !== null}</div>
-        `;
-    }, 1000);
-    
     if (urlParams.toString()) {
         console.log('OBS mode detected with parameters:', urlParams.toString());
         
