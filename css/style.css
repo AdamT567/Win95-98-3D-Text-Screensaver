@@ -504,3 +504,26 @@ legend {
     height: 100%;
     display: block;
 }
+
+/* Texture Window */
+.texture-window {
+    width: 700px;
+    min-width: 700px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+    position: fixed;
+}
+
+.texture-window .title-bar {
+    cursor: move;
+}
+
+.texture-window input[type="radio"] {
+    outline: none;
+}
+
+.texture-window input[type="radio"]:focus {
+    outline: none;
+}
