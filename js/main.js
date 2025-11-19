@@ -41,7 +41,7 @@ function updateLivePreview() {
     }
 }
 
-// Generate URL for OBS
+// Generate URL for OBS - UPDATE THIS FUNCTION IN main.js
 function updateUrl() {
     const textInput = document.getElementById('textInput').value;
     const isText = document.getElementById('text').checked;
@@ -60,7 +60,10 @@ function updateUrl() {
         resolution: resolution
     });
     
-    const url = window.location.origin + window.location.pathname + '?' + params.toString();
+    // CHANGED: Point to screensaver.html instead of index.html
+    const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
+    const url = baseUrl + 'screensaver.html?' + params.toString();
+    
     document.getElementById('urlOutput').value = url;
 }
 
