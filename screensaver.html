@@ -36,6 +36,7 @@
         let wobbleRotation = { x: 0, y: 0, z: 0 };
         let seesawAngle = 0;
         let animationId = null;
+        let lastTime = performance.now();
 
         // Parse URL parameters
         const urlParams = new URLSearchParams(window.location.search);
@@ -179,15 +180,23 @@
         }
 
         // Animation loop
-        function animate() {
+        function animate(currentTime) {
             animationId = requestAnimationFrame(animate);
             
             if (!textMesh || !textMesh.position) return;
             
-            // Update position
-            x += velocityX * speed;
-            y += velocityY * speed;
-            z += velocityZ * speed * 0.5;
+            // Calculate delta time for frame-rate independent animation
+            const deltaTime = (currentTime - lastTime) / 16.67; // Normalize to 60fps baseline
+            lastTime = currentTime;
+            
+            // Clamp delta time to prevent huge jumps
+            const clampedDelta = Math.min(deltaTime, 2);
+            
+            // Update position with speed multiplier increased to match preview
+            const speedMultiplier = speed * 1.5; // Increased from 1.0 to 1.5
+            x += velocityX * speedMultiplier * clampedDelta;
+            y += velocityY * speedMultiplier * clampedDelta;
+            z += velocityZ * speedMultiplier * 0.5 * clampedDelta;
             
             // Calculate visible bounds
             const distance = camera.position.z - z;
@@ -218,27 +227,27 @@
             // Apply position
             textMesh.position.set(x, y, z);
             
-            // Apply rotation based on spin style
+            // Apply rotation based on spin style (with delta time)
             if (spinStyle === 'wobble') {
-                wobbleRotation.x += 0.015;
-                wobbleRotation.y += 0.025;
-                wobbleRotation.z += 0.008;
+                wobbleRotation.x += 0.015 * clampedDelta;
+                wobbleRotation.y += 0.025 * clampedDelta;
+                wobbleRotation.z += 0.008 * clampedDelta;
                 
                 textMesh.rotation.x = Math.sin(wobbleRotation.x) * 0.6;
                 textMesh.rotation.y = Math.sin(wobbleRotation.y) * 1.0;
                 textMesh.rotation.z = Math.sin(wobbleRotation.z) * 0.3;
             } else if (spinStyle === 'spin') {
-                seesawAngle += 0.02;
+                seesawAngle += 0.02 * clampedDelta;
                 textMesh.rotation.z = Math.sin(seesawAngle) * 0.6;
                 textMesh.rotation.x = 0;
-                textMesh.rotation.y += 0.015;
+                textMesh.rotation.y += 0.015 * clampedDelta;
             } else if (spinStyle === 'see-saw') {
-                seesawAngle += 0.015;
+                seesawAngle += 0.015 * clampedDelta;
                 textMesh.rotation.z = Math.sin(seesawAngle) * 0.3;
                 textMesh.rotation.x = 0;
                 textMesh.rotation.y = 0;
             } else if (spinStyle === 'none') {
-                textMesh.rotation.y += 0.005;
+                textMesh.rotation.y += 0.005 * clampedDelta;
             }
             
             // Update time display if showing time
@@ -274,7 +283,8 @@
             velocityY = Math.sin(angle) * 2;
             velocityZ = (Math.random() - 0.5) * 2;
             
-            animate();
+            lastTime = performance.now();
+            animate(lastTime);
         }
 
         // Initialize on page load
