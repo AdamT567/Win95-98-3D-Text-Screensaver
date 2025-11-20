@@ -174,11 +174,11 @@ if (isTextured && window.currentGradient) {
     canvas.height = Math.max(scale, textHeight * 100);
     const ctx = canvas.getContext('2d');
     
-    // Define gradients based on selection - all horizontal (left to right)
+    // Define gradients based on selection
     let gradient;
     switch(window.currentGradient) {
         case 'rainbow':
-            gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             gradient.addColorStop(0, '#E40303');    // Red
             gradient.addColorStop(0.2, '#FF8C00');  // Orange
             gradient.addColorStop(0.4, '#FFED00');  // Yellow
@@ -187,7 +187,7 @@ if (isTextured && window.currentGradient) {
             gradient.addColorStop(1, '#732982');    // Purple
             break;
         case 'trans':
-            gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             gradient.addColorStop(0, '#5BCEFA');
             gradient.addColorStop(0.25, '#F5A9B8');
             gradient.addColorStop(0.5, '#FFFFFF');
@@ -195,7 +195,7 @@ if (isTextured && window.currentGradient) {
             gradient.addColorStop(1, '#5BCEFA');
             break;
         case 'bisexual':
-            gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             gradient.addColorStop(0, '#D60270');
             gradient.addColorStop(0.4, '#D60270');
             gradient.addColorStop(0.5, '#9B4F96');
@@ -203,7 +203,7 @@ if (isTextured && window.currentGradient) {
             gradient.addColorStop(1, '#0038A8');
             break;
         case 'asexual':
-            gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             gradient.addColorStop(0, '#000000');
             gradient.addColorStop(0.25, '#A3A3A3');
             gradient.addColorStop(0.5, '#FFFFFF');
