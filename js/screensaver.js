@@ -7,6 +7,8 @@ let wobbleRotation = { x: 0, y: 0, z: 0 };
 let seesawAngle = 0;
 let animationId = null;
 
+const BASE_SPEED = 1;
+
 window.screensaverInitialized = false;
 window.currentSpin = 'wobble';
 
@@ -257,12 +259,12 @@ function animateScreensaver() {
         return;
     }
     
-    const speed = parseInt(speedSlider.value) / 20; // Divided by 20 for slower, more classic speed
+    const speedMultiplier = parseFloat(speedSlider.value);
     
     // Update position
-    x += velocityX * speed;
-    y += velocityY * speed;
-    z += velocityZ * speed * 0.5;
+    x += velocityX * BASE_SPEED * speedMultiplier;
+    y += velocityY * BASE_SPEED * speedMultiplier;
+    z += velocityZ * BASE_SPEED * speedMultiplier * 0.5;
     
     // Calculate actual visible bounds at current Z depth
     const distance = camera.position.z - z;
