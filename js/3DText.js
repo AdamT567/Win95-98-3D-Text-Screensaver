@@ -410,20 +410,21 @@ function animateScreensaver() {
         textMesh.rotation.y = Math.sin(wobbleRotation.y) * 1.0;
         textMesh.rotation.z = Math.sin(wobbleRotation.z) * 0.3;
     } else if (window.currentSpin === 'spin') {
-        // Old see-saw code - now called "spin" - continuous Y-axis rotation with Z wobble
-        seesawAngle += 0.02;
-        textMesh.rotation.z = Math.sin(seesawAngle) * 0.6;
+        // Continuous Y-axis rotation only
+        textMesh.rotation.y += 0.02;
         textMesh.rotation.x = 0;
-        textMesh.rotation.y += 0.015;
+        textMesh.rotation.z = 0;
     } else if (window.currentSpin === 'see-saw') {
-        // New gentler see-saw - just rocks back and forth on Z axis
+        // Rocks back and forth on Z axis only
         seesawAngle += 0.015;
-        textMesh.rotation.z = Math.sin(seesawAngle) * 0.3; // Reduced from 0.6 to 0.3
+        textMesh.rotation.z = Math.sin(seesawAngle) * 0.3;
         textMesh.rotation.x = 0;
         textMesh.rotation.y = 0;
     } else if (window.currentSpin === 'none') {
-        // Slow rotation for visual interest
-        textMesh.rotation.y += 0.005;
+        // No rotation at all
+        textMesh.rotation.x = 0;
+        textMesh.rotation.y = 0;
+        textMesh.rotation.z = 0;
     }
     
     // Update time display if showing time
