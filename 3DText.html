@@ -54,6 +54,13 @@
         const FRAME_INTERVAL = 1000 / TARGET_FPS; // 16.67ms for 60fps
         const SHOW_FPS = false; // Toggle this to true for debugging
 
+        // Handle random spin style
+        if (spinStyle === 'random') {
+            const styles = ['none', 'see-saw', 'spin', 'wobble'];
+            spinStyle = styles[Math.floor(Math.random() * styles.length)];
+            console.log('Random spin selected:', spinStyle);
+        }
+
         // Initialize Three.js scene
         function initScreensaver() {
             console.log('Starting screensaver initialization...');
@@ -389,26 +396,30 @@ if (!materials) {
             textMesh.position.set(x, y, z);
             
             // Apply rotation based on spin style - EXACTLY matching preview
-            if (spinStyle === 'wobble') {
+            if (window.currentSpin === 'wobble') {
                 wobbleRotation.x += 0.015;
-                wobbleRotation.y += 0.025;
-                wobbleRotation.z += 0.008;
+                wobbleRotation.y += 0.02;
+                wobbleRotation.z += 0.015;
                 
-                textMesh.rotation.x = Math.sin(wobbleRotation.x) * 0.6;
+                textMesh.rotation.x = Math.sin(wobbleRotation.x) * 0.3;
                 textMesh.rotation.y = Math.sin(wobbleRotation.y) * 1.0;
                 textMesh.rotation.z = Math.sin(wobbleRotation.z) * 0.3;
-            } else if (spinStyle === 'spin') {
-                seesawAngle += 0.02;
-                textMesh.rotation.z = Math.sin(seesawAngle) * 0.6;
+            } else if (window.currentSpin === 'spin') {
+                // Continuous Y-axis rotation only
+                textMesh.rotation.y += 0.02;
                 textMesh.rotation.x = 0;
-                textMesh.rotation.y += 0.015;
-            } else if (spinStyle === 'see-saw') {
+                textMesh.rotation.z = 0;
+            } else if (window.currentSpin === 'see-saw') {
+                // Rocks back and forth on Z axis only
                 seesawAngle += 0.015;
                 textMesh.rotation.z = Math.sin(seesawAngle) * 0.3;
                 textMesh.rotation.x = 0;
                 textMesh.rotation.y = 0;
-            } else if (spinStyle === 'none') {
-                textMesh.rotation.y += 0.005;
+            } else if (window.currentSpin === 'none') {
+                // No rotation at all
+                textMesh.rotation.x = 0;
+                textMesh.rotation.y = 0;
+                textMesh.rotation.z = 0;
             }
             
             // Update time display if showing time
