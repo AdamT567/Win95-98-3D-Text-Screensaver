@@ -67,7 +67,7 @@ body {
     left: 0;
     right: 0;
     height: 28px;
-    background: #c0c0c0;
+    background: #b8bcb8;
     border-top: 2px solid white;
     display: flex;
     align-items: center;
@@ -84,8 +84,8 @@ body {
 .start-button {
     height: 24px;
     padding: 0 4px 0 2px;
-    background: #c0c0c0;
-    border: 2px outset #c0c0c0;
+    background: #b8bcb8;
+    border: 2px outset #b8bcb8;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -101,7 +101,7 @@ body {
 .taskbar-clock {
     height: 24px;
     padding: 0 8px;
-    background: #c0c0c0;
+    background: #b8bcb8;
     border: 1px inset white;
     display: flex;
     align-items: center;
@@ -112,7 +112,7 @@ body {
 /* Windows */
 .window {
     position: absolute;
-    background: #c0c0c0;
+    background: #b8bcb8;
     border-top: 2px solid #dfdfdf;
     border-left: 2px solid #dfdfdf;
     border-right: 2px solid #0a0a0a;
@@ -206,7 +206,7 @@ body {
 .title-bar-controls button {
     width: 16px;
     height: 14px;
-    background: #c0c0c0;
+    background: #b8bcb8;
     border-top: 1px solid #ffffff;
     border-left: 1px solid #ffffff;
     border-right: 1px solid #0a0a0a;
@@ -237,7 +237,7 @@ body {
 }
 
 .window.inactive .title-bar-text {
-    color: #c0c0c0;
+    color: #b8bcb8;
 }
 
 .window-body {
@@ -259,7 +259,7 @@ body {
 
 .tab {
     padding: 2px 8px;
-    background: #b8bcb8;  /* Changed from #c0c0c0 to make inactive tabs lighter */
+    background: #b8bcb8;  /* Changed from #b8bcb8 to make inactive tabs lighter */
     border-top: 1px solid #ffffff;
     border-left: 1px solid #ffffff;
     border-right: 1px solid #808080;
@@ -299,7 +299,7 @@ body {
 .monitor-preview {
     width: 184px;
     height: 155px;
-    background: #c0c0c0;
+    background: #b8bcb8;
     margin: 12px auto;
     position: relative;
     padding: 0;
@@ -344,7 +344,7 @@ body {
     height: 6px;
     background: linear-gradient(to bottom, #a0a0a0, #808080);
     margin: 3px auto 0;
-    border-top: 1px solid #c0c0c0;
+    border-top: 1px solid #b8bcb8;
     border-bottom: 1px solid #404040;
 }
 
@@ -353,14 +353,14 @@ body {
     height: 6px;
     background: linear-gradient(to bottom, #a0a0a0, #707070);
     margin: 1px auto 0;
-    border-top: 1px solid #c0c0c0;
+    border-top: 1px solid #b8bcb8;
     border-radius: 0 0 4px 4px;
 }
 
 /* Form Controls */
 .button {
     padding: 3px 12px;
-    background: #c0c0c0;
+    background: #b8bcb8;
     border-top: 2px solid #ffffff;
     border-left: 2px solid #ffffff;
     border-right: 2px solid #0a0a0a;
@@ -435,7 +435,7 @@ fieldset {
 
 legend {
     padding: 0 4px;
-    background: #c0c0c0;
+    background: #b8bcb8;
 }
 
 .checkbox-row {
