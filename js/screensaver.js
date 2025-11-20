@@ -207,6 +207,35 @@ if (isTextured && window.currentGradient) {
                 { stop: 1, color: new THREE.Color('#800080') }
             ];
             break;
+        case 'pansexual':
+            colorStops = [
+                { stop: 0, color: new THREE.Color('#FF218C') },
+                { stop: 0.33, color: new THREE.Color('#FF218C') },
+                { stop: 0.33, color: new THREE.Color('#FFD800') },
+                { stop: 0.66, color: new THREE.Color('#FFD800') },
+                { stop: 0.66, color: new THREE.Color('#21B1FF') },
+                { stop: 1, color: new THREE.Color('#21B1FF') }
+            ];
+            break;
+        case 'lesbian':
+            colorStops = [
+                { stop: 0, color: new THREE.Color('#D62900') },
+                { stop: 0.25, color: new THREE.Color('#FF9B55') },
+                { stop: 0.5, color: new THREE.Color('#FFFFFF') },
+                { stop: 0.75, color: new THREE.Color('#D462A6') },
+                { stop: 1, color: new THREE.Color('#A40062') }
+            ];
+            break;
+        case 'gay':
+            colorStops = [
+                { stop: 0, color: new THREE.Color('#078D70') },
+                { stop: 0.2, color: new THREE.Color('#26CEAA') },
+                { stop: 0.4, color: new THREE.Color('#98E8C1') },
+                { stop: 0.6, color: new THREE.Color('#7BADE2') },
+                { stop: 0.8, color: new THREE.Color('#5049CC') },
+                { stop: 1, color: new THREE.Color('#3D1A78') }
+            ];
+            break;
     }
     
     // Apply vertex colors based on Y position
