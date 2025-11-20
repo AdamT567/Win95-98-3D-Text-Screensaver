@@ -295,7 +295,7 @@ function animateScreensaver() {
     }
     
     const speedMultiplier = parseFloat(speedSlider.value);
-    
+
     // Update position
     x += velocityX * BASE_SPEED * speedMultiplier;
     y += velocityY * BASE_SPEED * speedMultiplier;
@@ -307,23 +307,18 @@ function animateScreensaver() {
     const visibleHeight = 2 * Math.tan(vFOV / 2) * distance;
     const visibleWidth = visibleHeight * camera.aspect;
     
-    // Log bounds every 60 frames (about once per second)
-    if (Math.random() < 0.016) {
-        console.log('Visible bounds:', {
-            width: visibleWidth,
-            height: visibleHeight,
-            boundsX: visibleWidth / 2,
-            boundsY: visibleHeight / 2,
-            currentX: x,
-            currentY: y,
-            currentZ: z,
-            distance: distance
-        });
+    // Get text bounding box dimensions
+    let textWidth = 0;
+    let textHeight = 0;
+    if (textMesh && textMesh.geometry && textMesh.geometry.boundingBox) {
+        const bbox = textMesh.geometry.boundingBox;
+        textWidth = (bbox.max.x - bbox.min.x) / 2;
+        textHeight = (bbox.max.y - bbox.min.y) / 2;
     }
     
-    // Use full visible area as bounds (text can go to edges)
-    const boundsX = visibleWidth / 2;
-    const boundsY = visibleHeight / 2;
+    // Use bounds minus text dimensions (so edges bounce, not center)
+    const boundsX = (visibleWidth / 2) - textWidth;
+    const boundsY = (visibleHeight / 2) - textHeight;
     const boundsZ = 30;
     
     if (x > boundsX || x < -boundsX) {
