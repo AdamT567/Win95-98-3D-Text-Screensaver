@@ -153,6 +153,36 @@ let isDragging = false;
 let dragOffsetX = 0;
 let dragOffsetY = 0;
 
+// Display Properties window management
+function openDisplayProperties() {
+    const displayWindow = document.querySelector('.display-properties-window');
+    const textSetupWindow = document.querySelector('.text-setup-window');
+    
+    displayWindow.style.display = 'flex';
+    displayWindow.classList.remove('inactive');
+    
+    // Make text setup window inactive if it's open
+    if (textSetupWindow.style.display !== 'none') {
+        textSetupWindow.classList.add('inactive');
+    }
+}
+
+function closeDisplayProperties() {
+    const displayWindow = document.querySelector('.display-properties-window');
+    const textSetupWindow = document.querySelector('.text-setup-window');
+    
+    // Only allow closing if text setup window is not open (or is inactive)
+    if (textSetupWindow.style.display === 'none' || textSetupWindow.classList.contains('inactive')) {
+        displayWindow.style.display = 'none';
+    }
+}
+
+function isTextSetupOpen() {
+    const textSetupWindow = document.querySelector('.text-setup-window');
+    return textSetupWindow.style.display !== 'none' && !textSetupWindow.classList.contains('inactive');
+}
+
+// Opens Texture Window to select Gradient
 function openTextureWindow() {
     console.log('Opening texture window');
     const textureWindow = document.getElementById('textureWindow');
