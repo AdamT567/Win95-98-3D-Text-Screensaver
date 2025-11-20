@@ -402,9 +402,9 @@ function animateScreensaver() {
     
     // Apply rotation based on spin style
     if (window.currentSpin === 'wobble') {
-        wobbleRotation.x += 0.015;
-        wobbleRotation.y += 0.025;
-        wobbleRotation.z += 0.008;
+        wobbleRotation.x += 0.025;
+        wobbleRotation.y += 0.015;
+        wobbleRotation.z += 0.01;
         
         textMesh.rotation.x = Math.sin(wobbleRotation.x) * 0.6;
         textMesh.rotation.y = Math.sin(wobbleRotation.y) * 1.0;
