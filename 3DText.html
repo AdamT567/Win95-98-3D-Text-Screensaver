@@ -354,10 +354,9 @@ if (!materials) {
             // Update position - EXACTLY matching the preview code
             x += velocityX * BASE_SPEED * speedMultiplier;
             y += velocityY * BASE_SPEED * speedMultiplier;
-            z += velocityZ * BASE_SPEED * speedMultiplier * 0.5;
             
             // Calculate visible bounds
-            const distance = camera.position.z - z;
+            const distance = camera.position.z; // Fixed distance since z=0
             const vFOV = camera.fov * Math.PI / 180;
             const visibleHeight = 2 * Math.tan(vFOV / 2) * distance;
             const visibleWidth = visibleHeight * camera.aspect;
@@ -374,9 +373,8 @@ if (!materials) {
             // Use bounds minus text dimensions (so edges bounce, not center)
             const boundsX = (visibleWidth / 2) - textWidth;
             const boundsY = (visibleHeight / 2) - textHeight;
-            const boundsZ = 30;
             
-            // Bounce off boundaries
+            // Bounce off boundaries - only X and Y
             if (x > boundsX || x < -boundsX) {
                 velocityX = -velocityX;
                 x = Math.max(-boundsX, Math.min(boundsX, x));
@@ -387,13 +385,8 @@ if (!materials) {
                 y = Math.max(-boundsY, Math.min(boundsY, y));
             }
             
-            if (z > boundsZ || z < -boundsZ) {
-                velocityZ = -velocityZ;
-                z = Math.max(-boundsZ, Math.min(boundsZ, z));
-            }
-            
-            // Apply position
-            textMesh.position.set(x, y, z);
+            // Apply position - Z is always 0
+            textMesh.position.set(x, y, 0);
             
             // Apply rotation based on spin style - EXACTLY matching preview
             if (window.currentSpin === 'wobble') {
@@ -445,15 +438,15 @@ if (!materials) {
 
         // Start animation
         function startAnimation() {
-            // Reset position
+            // Reset position - no Z movement
             x = (Math.random() - 0.5) * 60;
             y = (Math.random() - 0.5) * 40;
-            z = (Math.random() - 0.5) * 30;
+            z = 0; // Always stays at 0
             
             const angle = Math.random() * Math.PI * 2;
             velocityX = Math.cos(angle) * 2;
             velocityY = Math.sin(angle) * 2;
-            velocityZ = (Math.random() - 0.5) * 2;
+            velocityZ = 0; // No Z velocity
             
             animate();
         }
