@@ -272,11 +272,12 @@ if (!materials) {
     ];
 }
 
-textMesh = new THREE.Mesh(textGeometry, materials);
-scene.add(textMesh);
-
-console.log('Text mesh created successfully with gradient:', gradientType);
-}
+            // CREATE THE MESH - INSIDE createText() function
+            textMesh = new THREE.Mesh(textGeometry, materials);
+            scene.add(textMesh);
+            
+            console.log('Text mesh created successfully with gradient:', gradientType);
+        }
 
         // Animation loop
         function animate() {
