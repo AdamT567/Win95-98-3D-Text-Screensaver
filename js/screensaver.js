@@ -157,11 +157,11 @@ function createText() {
     // Center the geometry
     textGeometry.center();
     
-    // Check if using gradient or solid color
-    const isTextured = document.getElementById('textured').checked;
-    let materials;
-    
-    if (isTextured && window.currentGradient) {
+// Check if using gradient or solid color
+const isTextured = document.getElementById('textured').checked;
+let materials;
+
+if (isTextured && window.currentGradient) {
     // Get text bounding box dimensions to size the gradient texture properly
     const bbox = textGeometry.boundingBox;
     const textWidth = bbox.max.x - bbox.min.x;
