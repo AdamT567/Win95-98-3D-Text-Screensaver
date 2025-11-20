@@ -356,10 +356,9 @@ function animateScreensaver() {
     // Update position
     x += velocityX * BASE_SPEED * speedMultiplier;
     y += velocityY * BASE_SPEED * speedMultiplier;
-    z += velocityZ * BASE_SPEED * speedMultiplier * 0.5;
     
-    // Calculate actual visible bounds at current Z depth
-    const distance = camera.position.z - z;
+    // Calculate actual visible bounds at Z=0
+    const distance = camera.position.z; // Fixed distance since z=0
     const vFOV = camera.fov * Math.PI / 180;
     const visibleHeight = 2 * Math.tan(vFOV / 2) * distance;
     const visibleWidth = visibleHeight * camera.aspect;
@@ -376,7 +375,6 @@ function animateScreensaver() {
     // Use bounds minus text dimensions (so edges bounce, not center)
     const boundsX = (visibleWidth / 2) - textWidth;
     const boundsY = (visibleHeight / 2) - textHeight;
-    const boundsZ = 30;
     
     if (x > boundsX || x < -boundsX) {
         velocityX = -velocityX;
@@ -388,14 +386,9 @@ function animateScreensaver() {
         y = Math.max(-boundsY, Math.min(boundsY, y));
     }
     
-    if (z > boundsZ || z < -boundsZ) {
-        velocityZ = -velocityZ;
-        z = Math.max(-boundsZ, Math.min(boundsZ, z));
-    }
-    
-    // Apply position
+    // Apply position - Z is always 0
     if (textMesh && textMesh.position) {
-        textMesh.position.set(x, y, z);
+        textMesh.position.set(x, y, 0);
     } else {
         return;
     }
