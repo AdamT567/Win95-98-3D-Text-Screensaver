@@ -423,6 +423,43 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.checked) {
                 console.log('Textured mode selected');
             }
+// Make openDisplayProperties globally accessible
+    window.openDisplayProperties = openDisplayProperties;
+    window.closeDisplayProperties = closeDisplayProperties;
+    
+    // Monitor text setup window state to disable/enable Display Properties close button
+    const textSetupWindow = document.querySelector('.text-setup-window');
+    const displayPropsCloseBtn = document.getElementById('displayPropsCloseBtn');
+    
+    // Add click handler to text setup window to activate it and deactivate display properties
+    if (textSetupWindow) {
+        textSetupWindow.addEventListener('click', function() {
+            const displayWindow = document.querySelector('.display-properties-window');
+            
+            this.classList.remove('inactive');
+            displayWindow.classList.add('inactive');
+            
+            // Disable display properties close button
+            if (displayPropsCloseBtn) {
+                displayPropsCloseBtn.style.opacity = '0.5';
+                displayPropsCloseBtn.style.cursor = 'not-allowed';
+            }
         });
     }
-});
+    
+    // Add click handler to display properties to activate it
+    const displayWindow = document.querySelector('.display-properties-window');
+    if (displayWindow) {
+        displayWindow.addEventListener('click', function() {
+            // Only activate if text setup is not open
+            if (textSetupWindow.style.display === 'none' || textSetupWindow.classList.contains('inactive')) {
+                this.classList.remove('inactive');
+                
+                // Re-enable close button
+                if (displayPropsCloseBtn) {
+                    displayPropsCloseBtn.style.opacity = '1';
+                    displayPropsCloseBtn.style.cursor = 'pointer';
+                }
+            }
+        });
+    }
