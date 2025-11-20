@@ -111,8 +111,8 @@ function resetToDefaults() {
     document.getElementById('textInput').value = 'Goblinz Rule';
     document.getElementById('text').checked = true;
     document.getElementById('sizeSlider').value = 42;
-    document.getElementById('speedSlider').value = 5;
-    document.getElementById('resSlider').value = 50;
+    document.getElementById('speedSlider').value = 1.6
+    document.getElementById('resSlider').value = 250;
     document.getElementById('spinStyle').value = 'wobble';
     document.getElementById('colorPicker').value = '#ff6060';
     updatePreview();
