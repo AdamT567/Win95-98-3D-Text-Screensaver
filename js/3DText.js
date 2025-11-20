@@ -353,9 +353,9 @@ function animateScreensaver() {
     
     const speedMultiplier = parseFloat(speedSlider.value);
 
-    // Update position
-    x += velocityX * BASE_SPEED * speedMultiplier;
-    y += velocityY * BASE_SPEED * speedMultiplier;
+    // Update position - CONSTANT SPEED (not affected by slider)
+    x += velocityX * BASE_SPEED;
+    y += velocityY * BASE_SPEED;
     
     // Calculate actual visible bounds at Z=0
     const distance = camera.position.z; // Fixed distance since z=0
@@ -395,21 +395,21 @@ function animateScreensaver() {
     
     // Apply rotation based on spin style
     if (window.currentSpin === 'wobble') {
-        wobbleRotation.x += 0.015;
-        wobbleRotation.y += 0.02;
-        wobbleRotation.z += 0.015;
+        wobbleRotation.x += 0.015 * speedMultiplier;
+        wobbleRotation.y += 0.02 * speedMultiplier;
+        wobbleRotation.z += 0.015 * speedMultiplier;
         
         textMesh.rotation.x = Math.sin(wobbleRotation.x) * 0.3;
         textMesh.rotation.y = Math.sin(wobbleRotation.y) * 1.0;
         textMesh.rotation.z = Math.sin(wobbleRotation.z) * 0.3;
     } else if (window.currentSpin === 'spin') {
         // Continuous Y-axis rotation only
-        textMesh.rotation.y += 0.02;
+        textMesh.rotation.y += 0.02 * speedMultiplier;
         textMesh.rotation.x = 0;
         textMesh.rotation.z = 0;
     } else if (window.currentSpin === 'see-saw') {
         // Rocks back and forth on Z axis only
-        seesawAngle += 0.015;
+        seesawAngle += 0.015 * speedMultiplier;
         textMesh.rotation.z = Math.sin(seesawAngle) * 0.3;
         textMesh.rotation.x = 0;
         textMesh.rotation.y = 0;
