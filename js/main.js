@@ -390,11 +390,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const texturedRadio = document.getElementById('textured');
     if (texturedRadio) {
         texturedRadio.addEventListener('change', function() {
-            if (this.checked && !window.currentGradient) {
-                // User clicked textured but no gradient is selected yet
-                console.log('Textured selected but no gradient chosen - opening texture window');
-                openTextureWindow();
+            if (this.checked) {
+                console.log('Textured mode selected');
             }
         });
     }
-});
