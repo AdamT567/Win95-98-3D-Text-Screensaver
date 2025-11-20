@@ -41,7 +41,8 @@
         const urlParams = new URLSearchParams(window.location.search);
         const displayText = urlParams.get('text') || 'Goblinz Rule';
         const size = parseFloat(urlParams.get('size') || '42') / 10;
-        const speed = parseFloat(urlParams.get('speed') || '5') / 20;
+        const BASE_SPEED = 1;
+        const speedMultiplier = parseFloat(urlParams.get('speed') || '1');
         const spinStyle = urlParams.get('spin') || 'wobble';
         const color = urlParams.get('color') || '#ff6060';
         const resolution = parseFloat(urlParams.get('resolution') || '50');
@@ -185,9 +186,9 @@
             if (!textMesh || !textMesh.position) return;
             
             // Update position - EXACTLY matching the preview code
-            x += velocityX * speed;
-            y += velocityY * speed;
-            z += velocityZ * speed * 0.5;
+            x += velocityX * BASE_SPEED * speedMultiplier;
+            y += velocityY * BASE_SPEED * speedMultiplier;
+            z += velocityZ * BASE_SPEED * speedMultiplier * 0.5;
             
             // Calculate visible bounds
             const distance = camera.position.z - z;
