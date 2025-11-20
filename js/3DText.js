@@ -452,12 +452,12 @@ function onWindowResize() {
 function resetScreensaverPosition() {
     x = (Math.random() - 0.5) * 60;
     y = (Math.random() - 0.5) * 40;
-    z = (Math.random() - 0.5) * 30;
+    z = 0;
     
     const angle = Math.random() * Math.PI * 2;
-    velocityX = Math.cos(angle) * 1; // ← This controls speed
-    velocityY = Math.sin(angle) * 1; // ← This controls speed
-    velocityZ = (Math.random() - 0.5) * 2;
+    velocityX = Math.cos(angle) * .5; // ← This controls speed
+    velocityY = Math.sin(angle) * .5; // ← This controls speed
+    velocityZ = 0;
     
     wobbleRotation = { x: 0, y: 0, z: 0 };
     seesawAngle = 0;
