@@ -162,63 +162,86 @@ const isTextured = document.getElementById('textured').checked;
 let materials;
 
 if (isTextured && window.currentGradient) {
-    // Get text bounding box dimensions to size the gradient texture properly
+    // Use vertex colors for gradients (UV mapping doesn't work well on TextGeometry)
     const bbox = textGeometry.boundingBox;
-    const textWidth = bbox.max.x - bbox.min.x;
     const textHeight = bbox.max.y - bbox.min.y;
+    const minY = bbox.min.y;
     
-    // Create gradient texture sized to text proportions (scale up for quality)
-    const canvas = document.createElement('canvas');
-    const scale = 512; // Quality multiplier
-    canvas.width = Math.max(scale, textWidth * 100);
-    canvas.height = Math.max(scale, textHeight * 100);
-    const ctx = canvas.getContext('2d');
-    
-    // Define gradients based on selection
-    let gradient;
+    // Get gradient colors
+    let colorStops;
     switch(window.currentGradient) {
         case 'rainbow':
-            gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#E40303');    // Red
-            gradient.addColorStop(0.2, '#FF8C00');  // Orange
-            gradient.addColorStop(0.4, '#FFED00');  // Yellow
-            gradient.addColorStop(0.6, '#008026');  // Green
-            gradient.addColorStop(0.8, '#24408E');  // Blue
-            gradient.addColorStop(1, '#732982');    // Purple
+            colorStops = [
+                { stop: 0, color: new THREE.Color('#E40303') },    // Red - top
+                { stop: 0.2, color: new THREE.Color('#FF8C00') },  // Orange
+                { stop: 0.4, color: new THREE.Color('#FFED00') },  // Yellow
+                { stop: 0.6, color: new THREE.Color('#008026') },  // Green
+                { stop: 0.8, color: new THREE.Color('#24408E') },  // Blue
+                { stop: 1, color: new THREE.Color('#732982') }     // Purple - bottom
+            ];
             break;
         case 'trans':
-            gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#5BCEFA');
-            gradient.addColorStop(0.25, '#F5A9B8');
-            gradient.addColorStop(0.5, '#FFFFFF');
-            gradient.addColorStop(0.75, '#F5A9B8');
-            gradient.addColorStop(1, '#5BCEFA');
+            colorStops = [
+                { stop: 0, color: new THREE.Color('#5BCEFA') },
+                { stop: 0.25, color: new THREE.Color('#F5A9B8') },
+                { stop: 0.5, color: new THREE.Color('#FFFFFF') },
+                { stop: 0.75, color: new THREE.Color('#F5A9B8') },
+                { stop: 1, color: new THREE.Color('#5BCEFA') }
+            ];
             break;
         case 'bisexual':
-            gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#D60270');
-            gradient.addColorStop(0.4, '#D60270');
-            gradient.addColorStop(0.5, '#9B4F96');
-            gradient.addColorStop(0.6, '#0038A8');
-            gradient.addColorStop(1, '#0038A8');
+            colorStops = [
+                { stop: 0, color: new THREE.Color('#D60270') },
+                { stop: 0.4, color: new THREE.Color('#D60270') },
+                { stop: 0.5, color: new THREE.Color('#9B4F96') },
+                { stop: 0.6, color: new THREE.Color('#0038A8') },
+                { stop: 1, color: new THREE.Color('#0038A8') }
+            ];
             break;
         case 'asexual':
-            gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#000000');
-            gradient.addColorStop(0.25, '#A3A3A3');
-            gradient.addColorStop(0.5, '#FFFFFF');
-            gradient.addColorStop(0.75, '#800080');
-            gradient.addColorStop(1, '#800080');
+            colorStops = [
+                { stop: 0, color: new THREE.Color('#000000') },
+                { stop: 0.25, color: new THREE.Color('#A3A3A3') },
+                { stop: 0.5, color: new THREE.Color('#FFFFFF') },
+                { stop: 0.75, color: new THREE.Color('#800080') },
+                { stop: 1, color: new THREE.Color('#800080') }
+            ];
             break;
     }
     
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Apply vertex colors based on Y position
+    const colors = [];
+    const positions = textGeometry.attributes.position;
     
-    const texture = new THREE.CanvasTexture(canvas);
+    for (let i = 0; i < positions.count; i++) {
+        const y = positions.getY(i);
+        // Normalize Y position from 0 (bottom) to 1 (top)
+        const normalizedY = 1 - ((y - minY) / textHeight); // Invert so 0=top, 1=bottom
+        
+        // Find the appropriate color based on gradient stops
+        let color;
+        if (normalizedY <= colorStops[0].stop) {
+            color = colorStops[0].color.clone();
+        } else if (normalizedY >= colorStops[colorStops.length - 1].stop) {
+            color = colorStops[colorStops.length - 1].color.clone();
+        } else {
+            // Find the two stops to interpolate between
+            for (let j = 0; j < colorStops.length - 1; j++) {
+                if (normalizedY >= colorStops[j].stop && normalizedY <= colorStops[j + 1].stop) {
+                    const t = (normalizedY - colorStops[j].stop) / (colorStops[j + 1].stop - colorStops[j].stop);
+                    color = colorStops[j].color.clone().lerp(colorStops[j + 1].color, t);
+                    break;
+                }
+            }
+        }
+        
+        colors.push(color.r, color.g, color.b);
+    }
+    
+    textGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
     
     materials = new THREE.MeshPhongMaterial({
-        map: texture,
+        vertexColors: true,
         shininess: 100,
         specular: 0x444444
     });
