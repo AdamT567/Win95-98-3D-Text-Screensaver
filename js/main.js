@@ -41,7 +41,7 @@ function updateLivePreview() {
     }
 }
 
-// Generate URL for OBS - UPDATE THIS FUNCTION IN main.js
+// Generate URL for OBS
 function updateUrl() {
     const textInput = document.getElementById('textInput').value;
     const isText = document.getElementById('text').checked;
@@ -82,6 +82,15 @@ function updateUrl() {
         params.set('debug', 'true');
         console.log('✓ Debug mode enabled in URL');
     }
+    
+    const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
+    const url = baseUrl + '3DText.html?' + params.toString();
+    
+    console.log('Generated URL:', url);
+    console.log('======================');
+    
+    document.getElementById('urlOutput').value = url;
+}
 
 // Copy URL to clipboard
 function copyUrl() {
