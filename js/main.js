@@ -77,7 +77,7 @@ function updateUrl() {
     }
     
     const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
-    const url = baseUrl + 'screensaver.html?' + params.toString();
+    const url = baseUrl + '3DText.html?' + params.toString();
     
     console.log('Generated URL:', url);
     console.log('======================');
