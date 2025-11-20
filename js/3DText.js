@@ -135,7 +135,7 @@ function createText() {
     console.log('Creating text:', displayText, 'size:', size);
     
     // Calculate extrusion depth based on resolution slider
-    const extrusionDepth = size * (0.2 + (resolution / 500) * 0.6);
+    const extrusionDepth = size * (0.1 + (resolution / 500) * 3);
     
     // Create extruded text geometry - this gives the authentic Windows 95/98 look!
     const textGeometry = new THREE.TextGeometry(displayText, {
