@@ -155,26 +155,118 @@ let dragOffsetY = 0;
 
 // Display Properties window management
 function openDisplayProperties() {
-    const displayWindow = document.querySelector('.display-properties-window');
-    const textSetupWindow = document.querySelector('.text-setup-window');
+    const displayWindow = document.getElementById('displayPropertiesWindow');
+    const textSetupWindow = document.getElementById('textSetupWindow');
     
     displayWindow.style.display = 'flex';
     displayWindow.classList.remove('inactive');
     
     // Make text setup window inactive if it's open
-    if (textSetupWindow.style.display !== 'none') {
+    if (textSetupWindow && textSetupWindow.style.display !== 'none') {
         textSetupWindow.classList.add('inactive');
     }
 }
 
 function closeDisplayProperties() {
-    const displayWindow = document.querySelector('.display-properties-window');
-    const textSetupWindow = document.querySelector('.text-setup-window');
+    const displayWindow = document.getElementById('displayPropertiesWindow');
+    const textSetupWindow = document.getElementById('textSetupWindow');
     
-    // Only allow closing if text setup window is not open (or is inactive)
-    if (textSetupWindow.style.display === 'none' || textSetupWindow.classList.contains('inactive')) {
+    // Only allow closing if text setup window is closed
+    if (!textSetupWindow || textSetupWindow.style.display === 'none') {
         displayWindow.style.display = 'none';
     }
+}
+
+function openSettings() {
+    const displayWindow = document.getElementById('displayPropertiesWindow');
+    const textSetupWindow = document.getElementById('textSetupWindow');
+    
+    console.log('Opening settings window');
+    
+    // Show and activate text setup window
+    textSetupWindow.style.display = 'flex';
+    textSetupWindow.classList.remove('inactive');
+    
+    // Make display properties inactive and "locked"
+    displayWindow.classList.add('inactive');
+    
+    // Disable display properties close button
+    const displayPropsCloseBtn = document.getElementById('displayPropsCloseBtn');
+    if (displayPropsCloseBtn) {
+        displayPropsCloseBtn.style.opacity = '0.5';
+        displayPropsCloseBtn.style.cursor = 'not-allowed';
+        displayPropsCloseBtn.style.pointerEvents = 'none';
+    }
+}
+
+function closeSettings() {
+    const displayWindow = document.getElementById('displayPropertiesWindow');
+    const textSetupWindow = document.getElementById('textSetupWindow');
+    
+    console.log('Closing settings window');
+    
+    // Hide text setup window
+    textSetupWindow.style.display = 'none';
+    
+    // Reactivate display properties window
+    displayWindow.classList.remove('inactive');
+    
+    // Re-enable display properties close button
+    const displayPropsCloseBtn = document.getElementById('displayPropsCloseBtn');
+    if (displayPropsCloseBtn) {
+        displayPropsCloseBtn.style.opacity = '1';
+        displayPropsCloseBtn.style.cursor = 'pointer';
+        displayPropsCloseBtn.style.pointerEvents = 'auto';
+    }
+}
+
+// Make windows draggable
+function makeWindowDraggable(windowElement, titleBarElement) {
+    let isDragging = false;
+    let currentX;
+    let currentY;
+    let initialX;
+    let initialY;
+    
+    titleBarElement.addEventListener('mousedown', function(e) {
+        // Don't drag if clicking on buttons
+        if (e.target.tagName === 'BUTTON' || e.target.tagName === 'IMG') {
+            return;
+        }
+        
+        // Don't drag if window is inactive
+        if (windowElement.classList.contains('inactive')) {
+            return;
+        }
+        
+        isDragging = true;
+        
+        const rect = windowElement.getBoundingClientRect();
+        initialX = e.clientX - rect.left;
+        initialY = e.clientY - rect.top;
+        
+        titleBarElement.style.cursor = 'grabbing';
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        
+        e.preventDefault();
+        
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+        
+        windowElement.style.left = currentX + 'px';
+        windowElement.style.top = currentY + 'px';
+        windowElement.style.transform = 'none'; // Remove any transform
+    });
+    
+    document.addEventListener('mouseup', function() {
+        if (isDragging) {
+            isDragging = false;
+            titleBarElement.style.cursor = 'move';
+        }
+    });
 }
 
 function isTextSetupOpen() {
