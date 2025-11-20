@@ -259,7 +259,7 @@ body {
 
 .tab {
     padding: 2px 8px;
-    background: #dfdfdf;  /* Changed from #c0c0c0 to make inactive tabs lighter */
+    background: #b8bcb8;  /* Changed from #c0c0c0 to make inactive tabs lighter */
     border-top: 2px solid #ffffff;
     border-left: 2px solid #ffffff;
     border-right: 2px solid #808080;
@@ -272,8 +272,8 @@ body {
 }
 
 .tab.active {
-    background: #c0c0c0;  /* This matches the tab-content background */
-    border-bottom: 2px solid #c0c0c0;  /* Makes it blend with content area */
+    background: #b8bcb8;  /* This matches the tab-content background */
+    border-bottom: 2px solid #b8bcb8;  /* Makes it blend with content area */
     margin-bottom: -2px;
     padding-bottom: 4px;
     position: relative;
@@ -286,7 +286,7 @@ body {
     border-right: 2px solid #808080;
     border-bottom: 2px solid #808080;
     padding: 8px;
-    background: #c0c0c0;
+    background: #b8bcb8;
     flex: 1;
     overflow: auto;
 }
