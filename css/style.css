@@ -512,8 +512,8 @@ legend {
 
 /* Texture Window */
 .texture-window {
-    width: 700px;
-    min-width: 700px;
+    width: 150px;
+    min-width: 100px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
