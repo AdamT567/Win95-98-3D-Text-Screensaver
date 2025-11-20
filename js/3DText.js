@@ -364,18 +364,21 @@ function animateScreensaver() {
     const visibleHeight = 2 * Math.tan(vFOV / 2) * distance;
     const visibleWidth = visibleHeight * camera.aspect;
     
-    // Get text bounding box dimensions
-    let textWidth = 0;
-    let textHeight = 0;
+    // Get text bounding box dimensions including depth
+    let textDiagonal = 0;
     if (textMesh && textMesh.geometry && textMesh.geometry.boundingBox) {
         const bbox = textMesh.geometry.boundingBox;
-        textWidth = (bbox.max.x - bbox.min.x) / 2;
-        textHeight = (bbox.max.y - bbox.min.y) / 2;
+        const textWidth = (bbox.max.x - bbox.min.x) / 2;
+        const textHeight = (bbox.max.y - bbox.min.y) / 2;
+        const textDepth = (bbox.max.z - bbox.min.z) / 2;
+        
+        // Calculate 3D diagonal (worst case when rotated in any direction)
+        textDiagonal = Math.sqrt(textWidth * textWidth + textHeight * textHeight + textDepth * textDepth);
     }
     
-    // Use bounds minus text dimensions (so edges bounce, not center)
-    const boundsX = (visibleWidth / 2) - textWidth;
-    const boundsY = (visibleHeight / 2) - textHeight;
+    // Use bounds minus diagonal (accounts for rotation and depth)
+    const boundsX = (visibleWidth / 2) - textDiagonal;
+    const boundsY = (visibleHeight / 2) - textDiagonal;
     
     if (x > boundsX || x < -boundsX) {
         velocityX = -velocityX;
