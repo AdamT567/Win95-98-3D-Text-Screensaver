@@ -11,10 +11,10 @@ let lastFrameTime = 0;
 const BASE_SPEED = 1;
 const TARGET_FPS = 60;
 const FRAME_INTERVAL = 1000 / TARGET_FPS; // 16.67ms for 60fps
-const SHOW_FPS = false; // Toggle this to true for debugging
 
 window.screensaverInitialized = false;
 window.currentSpin = 'wobble';
+window.debugMode = false; // Add debug flag
 
 // Initialize Three.js scene
 function initScreensaver() {
@@ -331,8 +331,8 @@ function animateScreensaver() {
     
     lastFrameTime = currentTime - (deltaTime % FRAME_INTERVAL);
     
-    // FPS Counter (only if enabled)
-    if (SHOW_FPS) {
+    // FPS Counter (only if debug mode enabled)
+    if (window.debugMode) {
         if (!window.frameCount) window.frameCount = 0;
         if (!window.lastFpsTime) window.lastFpsTime = performance.now();
         
