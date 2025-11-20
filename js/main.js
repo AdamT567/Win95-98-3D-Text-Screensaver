@@ -51,6 +51,9 @@ function updateUrl() {
     const color = document.getElementById('colorPicker').value;
     const resolution = document.getElementById('resSlider').value;
     
+    // Check if gradient is selected
+    const isTextured = document.getElementById('textured').checked;
+    
     const params = new URLSearchParams({
         text: isText ? (textInput || 'Goblinz Rule') : 'time',
         size: size,
@@ -60,7 +63,11 @@ function updateUrl() {
         resolution: resolution
     });
     
-    // CHANGED: Point to screensaver.html instead of index.html
+    // Add gradient parameter if textured is selected
+    if (isTextured && window.currentGradient) {
+        params.set('gradient', window.currentGradient);
+    }
+    
     const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
     const url = baseUrl + 'screensaver.html?' + params.toString();
     
