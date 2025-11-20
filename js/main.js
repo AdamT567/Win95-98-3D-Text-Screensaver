@@ -515,43 +515,49 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.checked) {
                 console.log('Textured mode selected');
             }
-// Make openDisplayProperties globally accessible
+        });
+    }
+    
+    // Make functions globally accessible
     window.openDisplayProperties = openDisplayProperties;
     window.closeDisplayProperties = closeDisplayProperties;
+    window.openSettings = openSettings;
+    window.closeSettings = closeSettings;
     
-    // Monitor text setup window state to disable/enable Display Properties close button
-    const textSetupWindow = document.querySelector('.text-setup-window');
-    const displayPropsCloseBtn = document.getElementById('displayPropsCloseBtn');
+    // Make windows draggable
+    const displayWindow = document.getElementById('displayPropertiesWindow');
+    const displayTitleBar = document.getElementById('displayPropsTitleBar');
+    const textSetupWindow = document.getElementById('textSetupWindow');
+    const textSetupTitleBar = document.getElementById('textSetupTitleBar');
     
-    // Add click handler to text setup window to activate it and deactivate display properties
-    if (textSetupWindow) {
-        textSetupWindow.addEventListener('click', function() {
-            const displayWindow = document.querySelector('.display-properties-window');
-            
-            this.classList.remove('inactive');
-            displayWindow.classList.add('inactive');
-            
-            // Disable display properties close button
-            if (displayPropsCloseBtn) {
-                displayPropsCloseBtn.style.opacity = '0.5';
-                displayPropsCloseBtn.style.cursor = 'not-allowed';
-            }
-        });
+    if (displayWindow && displayTitleBar) {
+        makeWindowDraggable(displayWindow, displayTitleBar);
     }
     
-    // Add click handler to display properties to activate it
-    const displayWindow = document.querySelector('.display-properties-window');
+    if (textSetupWindow && textSetupTitleBar) {
+        makeWindowDraggable(textSetupWindow, textSetupTitleBar);
+    }
+    
+    // Add click handlers to activate windows
     if (displayWindow) {
-        displayWindow.addEventListener('click', function() {
-            // Only activate if text setup is not open
-            if (textSetupWindow.style.display === 'none' || textSetupWindow.classList.contains('inactive')) {
+        displayWindow.addEventListener('mousedown', function() {
+            const textSetup = document.getElementById('textSetupWindow');
+            // Only activate if settings window is closed
+            if (!textSetup || textSetup.style.display === 'none') {
                 this.classList.remove('inactive');
-                
-                // Re-enable close button
-                if (displayPropsCloseBtn) {
-                    displayPropsCloseBtn.style.opacity = '1';
-                    displayPropsCloseBtn.style.cursor = 'pointer';
-                }
             }
         });
     }
+    
+    if (textSetupWindow) {
+        textSetupWindow.addEventListener('mousedown', function() {
+            // Settings window is always active when open
+            this.classList.remove('inactive');
+            
+            // Make display properties inactive
+            if (displayWindow) {
+                displayWindow.classList.add('inactive');
+            }
+        });
+    }
+});
