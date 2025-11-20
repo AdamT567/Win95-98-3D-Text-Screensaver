@@ -33,8 +33,8 @@
         </div>
 
         <!-- Display Properties Window -->
-        <div class="window inactive display-properties-window" style="display: none;">
-            <div class="title-bar">
+        <div class="window inactive display-properties-window" id="displayPropertiesWindow" style="display: none;">
+            <div class="title-bar" id="displayPropsTitleBar">
                 <div class="title-bar-text">Display Properties</div>
                 <div class="title-bar-controls">
                     <button><img src="images/help-button.png" alt="?"></button>
@@ -65,7 +65,7 @@
                             <select style="flex: 1;">
                                 <option>3D Text</option>
                             </select>
-                            <button class="button" disabled>Settings...</button>
+                            <button class="button" id="settingsBtn" onclick="openSettings()">Settings...</button>
                             <button class="button" id="previewBtn">Preview</button>
                         </div>
                         <div class="checkbox-row">
@@ -97,11 +97,11 @@
         </div>
 
         <!-- 3D Text Setup Window -->
-        <div class="window text-setup-window">
-            <div class="title-bar">
+        <div class="window text-setup-window" id="textSetupWindow" style="display: none;">
+            <div class="title-bar" id="textSetupTitleBar">
                 <div class="title-bar-text">3D Text Setup</div>
                 <div class="title-bar-controls">
-                    <button><img src="images/close-button.png" alt="×"></button>
+                    <button onclick="closeSettings()"><img src="images/close-button.png" alt="×"></button>
                 </div>
             </div>
             <div class="window-body">
