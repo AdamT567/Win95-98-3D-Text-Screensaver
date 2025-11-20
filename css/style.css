@@ -259,7 +259,7 @@ body {
 
 .tab {
     padding: 2px 8px;
-    background: #c0c0c0;
+    background: #dfdfdf;  /* Changed from #c0c0c0 to make inactive tabs lighter */
     border-top: 2px solid #ffffff;
     border-left: 2px solid #ffffff;
     border-right: 2px solid #808080;
@@ -272,10 +272,12 @@ body {
 }
 
 .tab.active {
-    background: #c0c0c0;
-    border-bottom: 2px solid #c0c0c0;
+    background: #c0c0c0;  /* This matches the tab-content background */
+    border-bottom: 2px solid #c0c0c0;  /* Makes it blend with content area */
     margin-bottom: -2px;
     padding-bottom: 4px;
+    position: relative;
+    z-index: 1;  /* Bring active tab forward */
 }
 
 .tab-content {
