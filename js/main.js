@@ -54,6 +54,11 @@ function updateUrl() {
     // Check if gradient is selected
     const isTextured = document.getElementById('textured').checked;
     
+    // DEBUG: Log the current state
+    console.log('=== updateUrl() Debug ===');
+    console.log('isTextured:', isTextured);
+    console.log('window.currentGradient:', window.currentGradient);
+    
     const params = new URLSearchParams({
         text: isText ? (textInput || 'Goblinz Rule') : 'time',
         size: size,
@@ -66,10 +71,16 @@ function updateUrl() {
     // Add gradient parameter if textured is selected
     if (isTextured && window.currentGradient) {
         params.set('gradient', window.currentGradient);
+        console.log('✓ Added gradient to URL:', window.currentGradient);
+    } else {
+        console.log('✗ Gradient NOT added. isTextured:', isTextured, 'currentGradient:', window.currentGradient);
     }
     
     const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
     const url = baseUrl + 'screensaver.html?' + params.toString();
+    
+    console.log('Generated URL:', url);
+    console.log('======================');
     
     document.getElementById('urlOutput').value = url;
 }
@@ -231,6 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded');
     console.log('THREE.js available?', typeof THREE !== 'undefined');
     
+    
     // Check if THREE.js loaded
     if (typeof THREE === 'undefined') {
         console.error('THREE.js failed to load! This is required for the screensaver.');
@@ -360,5 +372,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(`Waiting for screensaver... (${attempts}/${maxAttempts})`);
             }
         }, 100);
+      const solidRadio = document.getElementById('solid');
+        if (solidRadio) {
+            solidRadio.addEventListener('change', function() {
+                if (this.checked) {
+                    // User switched to solid color, clear gradient
+                    window.currentGradient = null;
+                    console.log('Switched to solid color, cleared gradient');
+            }
+        });
+    }
+    
+    // Add listener for when user manually clicks textured radio
+    const texturedRadio = document.getElementById('textured');
+    if (texturedRadio) {
+        texturedRadio.addEventListener('change', function() {
+            if (this.checked && !window.currentGradient) {
+                // User clicked textured but no gradient is selected yet
+                console.log('Textured selected but no gradient chosen - opening texture window');
+                openTextureWindow();
+            }
+        });
     }
 });
