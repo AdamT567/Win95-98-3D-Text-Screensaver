@@ -76,14 +76,12 @@ function updateUrl() {
         console.log('✗ Gradient NOT added. isTextured:', isTextured, 'currentGradient:', window.currentGradient);
     }
     
-    const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
-    const url = baseUrl + '3DText.html?' + params.toString();
-    
-    console.log('Generated URL:', url);
-    console.log('======================');
-    
-    document.getElementById('urlOutput').value = url;
-}
+    // Add debug parameter if checkbox is checked
+    const debugCheckbox = document.getElementById('password');
+    if (debugCheckbox && debugCheckbox.checked) {
+        params.set('debug', 'true');
+        console.log('✓ Debug mode enabled in URL');
+    }
 
 // Copy URL to clipboard
 function copyUrl() {
@@ -514,6 +512,21 @@ document.addEventListener('DOMContentLoaded', function() {
         texturedRadio.addEventListener('change', function() {
             if (this.checked) {
                 console.log('Textured mode selected');
+            }
+        });
+    }
+    
+    // Secret debug mode - password checkbox toggles FPS display
+    const passwordCheckbox = document.getElementById('password');
+    if (passwordCheckbox) {
+        passwordCheckbox.addEventListener('change', function() {
+            window.debugMode = this.checked;
+            console.log('Debug mode:', window.debugMode ? 'ENABLED' : 'DISABLED');
+            
+            // Update FPS display immediately if preview is active
+            const fpsDisplay = document.getElementById('fps');
+            if (fpsDisplay) {
+                fpsDisplay.style.display = window.debugMode ? 'block' : 'none';
             }
         });
     }
