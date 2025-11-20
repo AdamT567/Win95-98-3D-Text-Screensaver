@@ -258,7 +258,7 @@ function makeWindowDraggable(windowElement, titleBarElement) {
         
         windowElement.style.left = currentX + 'px';
         windowElement.style.top = currentY + 'px';
-        windowElement.style.transform = 'none'; // Remove any transform
+        // windowElement.style.transform = 'none'; // Removes transform, not needed right now
     });
     
     document.addEventListener('mouseup', function() {
