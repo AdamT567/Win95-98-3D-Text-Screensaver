@@ -172,7 +172,7 @@ function createText() {
         let gradient;
         switch(window.currentGradient) {
             case 'rainbow':
-                // Gay Pride flag colors
+                // Gay Pride flag colors - ALREADY HORIZONTAL
                 gradient = ctx.createLinearGradient(0, 0, 512, 0);
                 gradient.addColorStop(0, '#E40303');    // Red
                 gradient.addColorStop(0.2, '#FF8C00');  // Orange
@@ -182,7 +182,8 @@ function createText() {
                 gradient.addColorStop(1, '#732982');    // Purple
                 break;
             case 'trans':
-                gradient = ctx.createLinearGradient(0, 0, 0, 512);
+                // CHANGED: from (0, 0, 0, 512) to (0, 0, 512, 0) for horizontal
+                gradient = ctx.createLinearGradient(0, 0, 512, 0);
                 gradient.addColorStop(0, '#5BCEFA');
                 gradient.addColorStop(0.25, '#F5A9B8');
                 gradient.addColorStop(0.5, '#FFFFFF');
@@ -190,15 +191,17 @@ function createText() {
                 gradient.addColorStop(1, '#5BCEFA');
                 break;
             case 'bisexual':
-                gradient = ctx.createLinearGradient(0, 0, 0, 512);
+                // CHANGED: from (0, 0, 0, 512) to (0, 0, 512, 0) for horizontal
+                gradient = ctx.createLinearGradient(0, 0, 512, 0);
                 gradient.addColorStop(0, '#D60270');
-                gradient.addColorStop(0.35, '#D60270');
+                gradient.addColorStop(0.4, '#D60270');
                 gradient.addColorStop(0.5, '#9B4F96');
-                gradient.addColorStop(0.65, '#0038A8');
+                gradient.addColorStop(0.6, '#0038A8');
                 gradient.addColorStop(1, '#0038A8');
                 break;
             case 'asexual':
-                gradient = ctx.createLinearGradient(0, 0, 0, 512);
+                // CHANGED: from (0, 0, 0, 512) to (0, 0, 512, 0) for horizontal
+                gradient = ctx.createLinearGradient(0, 0, 512, 0);
                 gradient.addColorStop(0, '#000000');
                 gradient.addColorStop(0.25, '#A3A3A3');
                 gradient.addColorStop(0.5, '#FFFFFF');
