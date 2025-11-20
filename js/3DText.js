@@ -313,7 +313,8 @@ function animateScreensaver() {
         animationId = requestAnimationFrame(animateScreensaver);
         return;
     }
-    
+
+    // Speedslider multipliers are in Index.html under slider-container
     const speedSlider = document.getElementById('speedSlider');
     if (!speedSlider) {
         animationId = requestAnimationFrame(animateScreensaver);
