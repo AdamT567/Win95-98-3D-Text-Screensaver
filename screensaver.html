@@ -185,6 +185,28 @@
             animationId = requestAnimationFrame(animate);
             
             if (!textMesh || !textMesh.position) return;
+
+            // Animation loop
+            function animate() {
+                animationId = requestAnimationFrame(animate);
+                
+                if (!textMesh || !textMesh.position) return;
+                
+                // FPS Counter
+                if (!window.frameCount) window.frameCount = 0;
+                if (!window.lastFpsTime) window.lastFpsTime = performance.now();
+                
+                window.frameCount++;
+                const currentTime = performance.now();
+                if (currentTime - window.lastFpsTime >= 1000) {
+                    const fpsDisplay = document.getElementById('fps');
+                    if (fpsDisplay) {
+                        fpsDisplay.textContent = `FPS: ${window.frameCount}`;
+                    }
+                    window.frameCount = 0;
+                    window.lastFpsTime = currentTime;
+                }
+    // END FPS Counter
             
             // Update position - EXACTLY matching the preview code
             x += velocityX * BASE_SPEED * speedMultiplier;
@@ -283,5 +305,4 @@
         window.addEventListener('DOMContentLoaded', initScreensaver);
     </script>
 </body>
-    <div id="fps" style="position: fixed; top: 10px; left: 10px; color: lime; font-family: monospace; font-size: 20px; z-index: 10000; background: rgba(0,0,0,0.5); padding: 5px;"></div>
 </html>
