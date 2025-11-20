@@ -455,8 +455,8 @@ function resetScreensaverPosition() {
     z = (Math.random() - 0.5) * 30;
     
     const angle = Math.random() * Math.PI * 2;
-    velocityX = Math.cos(angle) * 2;
-    velocityY = Math.sin(angle) * 2;
+    velocityX = Math.cos(angle) * 1; // ← This controls speed
+    velocityY = Math.sin(angle) * 1; // ← This controls speed
     velocityZ = (Math.random() - 0.5) * 2;
     
     wobbleRotation = { x: 0, y: 0, z: 0 };
