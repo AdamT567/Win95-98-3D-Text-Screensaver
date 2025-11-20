@@ -162,7 +162,7 @@
             textGeometry.computeBoundingBox();
             textGeometry.center();
             
-            // Create materials
+            // Create materials - solid color only for screensaver.html (gradients not supported via URL params yet)
             const frontColor = new THREE.Color(color);
             const sideColor = new THREE.Color(color).multiplyScalar(0.5);
             
@@ -177,13 +177,6 @@
                     shininess: 30 
                 })
             ];
-            
-            // Create mesh
-            textMesh = new THREE.Mesh(textGeometry, materials);
-            scene.add(textMesh);
-            
-            console.log('Text mesh created successfully');
-        }
 
         // Animation loop
         function animate() {
