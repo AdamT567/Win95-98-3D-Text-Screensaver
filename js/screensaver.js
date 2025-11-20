@@ -6,8 +6,12 @@ let velocityX = 2, velocityY = 1.5, velocityZ = 1;
 let wobbleRotation = { x: 0, y: 0, z: 0 };
 let seesawAngle = 0;
 let animationId = null;
+let lastFrameTime = 0;
 
 const BASE_SPEED = 1;
+const TARGET_FPS = 60;
+const FRAME_INTERVAL = 1000 / TARGET_FPS; // 16.67ms for 60fps
+const SHOW_FPS = false; // Toggle this to true for debugging
 
 window.screensaverInitialized = false;
 window.currentSpin = 'wobble';
@@ -259,21 +263,36 @@ function animateScreensaver() {
         return;
     }
 
-    // FPS Counter - ADD THIS HERE
-    if (!window.frameCount) window.frameCount = 0;
-    if (!window.lastFpsTime) window.lastFpsTime = performance.now();
-    
-    window.frameCount++;
+    // FPS limiting
     const currentTime = performance.now();
-    if (currentTime - window.lastFpsTime >= 1000) {
-        const fpsDisplay = document.getElementById('fps');
-        if (fpsDisplay) {
-            fpsDisplay.textContent = `FPS: ${window.frameCount}`;
-        }
-        window.frameCount = 0;
-        window.lastFpsTime = currentTime;
+    const deltaTime = currentTime - lastFrameTime;
+    
+    if (deltaTime < FRAME_INTERVAL) {
+        animationId = requestAnimationFrame(animateScreensaver);
+        return;
     }
-    // END FPS Counter
+    
+    lastFrameTime = currentTime - (deltaTime % FRAME_INTERVAL);
+    
+    // FPS Counter (only if enabled)
+    if (SHOW_FPS) {
+        if (!window.frameCount) window.frameCount = 0;
+        if (!window.lastFpsTime) window.lastFpsTime = performance.now();
+        
+        window.frameCount++;
+        if (currentTime - window.lastFpsTime >= 1000) {
+            const fpsDisplay = document.getElementById('fps');
+            if (fpsDisplay) {
+                fpsDisplay.textContent = `FPS: ${window.frameCount}`;
+                fpsDisplay.style.display = 'block';
+            }
+            window.frameCount = 0;
+            window.lastFpsTime = currentTime;
+        }
+    } else {
+        const fpsDisplay = document.getElementById('fps');
+        if (fpsDisplay) fpsDisplay.style.display = 'none';
+    }
     
     const speedMultiplier = parseFloat(speedSlider.value);
     
