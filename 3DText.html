@@ -152,7 +152,7 @@
             }
             
             // Calculate extrusion depth based on resolution
-            const extrusionDepth = size * (0.2 + (resolution / 100) * 0.6);
+            const extrusionDepth = size * (0.2 + (resolution / 500) * 0.6);
             
             // Create extruded text geometry
             const textGeometry = new THREE.TextGeometry(text, {
