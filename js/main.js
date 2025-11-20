@@ -372,6 +372,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(`Waiting for screensaver... (${attempts}/${maxAttempts})`);
             }
         }, 100);
+    }
+    
+    // Add listener for when user manually clicks solid radio
+    const solidRadio = document.getElementById('solid');
+    if (solidRadio) {
+        solidRadio.addEventListener('change', function() {
+            if (this.checked) {
+                // User switched to solid color, clear gradient
+                window.currentGradient = null;
+                console.log('Switched to solid color, cleared gradient');
+            }
+        });
+    }
+    
+    // Add listener for when user manually clicks textured radio
+    const texturedRadio = document.getElementById('textured');
+    if (texturedRadio) {
+        texturedRadio.addEventListener('change', function() {
+            if (this.checked && !window.currentGradient) {
+                // User clicked textured but no gradient is selected yet
+                console.log('Textured selected but no gradient chosen - opening texture window');
+                openTextureWindow();
+            }
+        });
+    }
+});
       const solidRadio = document.getElementById('solid');
         if (solidRadio) {
             solidRadio.addEventListener('change', function() {
