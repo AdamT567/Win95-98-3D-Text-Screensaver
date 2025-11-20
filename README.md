@@ -6,18 +6,25 @@ This project will emulate a windows 98 desktop UI and allow users to select, con
 
 Currently working:
 
-UI
-3D Text
+-UI
+
+-3D Text
 
 
 ------------------------------------------
 
 To-DO:
 
-Expand drop down selection
-Starfield
-3D Maze
-Flying Objects
-Flying Windows
-3D Pipes
-3D Flower Box (Maybe)
+-Expand drop down selection
+
+-Starfield
+
+-3D Maze
+
+-Flying Objects
+
+-Flying Windows
+
+-3D Pipes
+
+-3D Flower Box (Maybe)
