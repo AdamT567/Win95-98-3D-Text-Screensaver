@@ -251,7 +251,7 @@ body {
 /* Tabs */
 .tabs {
     display: flex;
-    gap: 2px;
+    gap: 0px;
     margin-bottom: -2px;
     padding: 0 2px;
     overflow: hidden;
@@ -260,10 +260,10 @@ body {
 .tab {
     padding: 2px 8px;
     background: #b8bcb8;  /* Changed from #c0c0c0 to make inactive tabs lighter */
-    border-top: 2px solid #ffffff;
-    border-left: 2px solid #ffffff;
-    border-right: 2px solid #808080;
-    border-bottom: 2px solid #808080;
+    border-top: 1px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    border-right: 1px solid #808080;
+    border-bottom: 1px solid #808080;
     border-radius: 3px 3px 0 0;
     cursor: pointer;
     user-select: none;
