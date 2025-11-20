@@ -258,6 +258,22 @@ function animateScreensaver() {
         animationId = requestAnimationFrame(animateScreensaver);
         return;
     }
+
+    // FPS Counter - ADD THIS HERE
+    if (!window.frameCount) window.frameCount = 0;
+    if (!window.lastFpsTime) window.lastFpsTime = performance.now();
+    
+    window.frameCount++;
+    const currentTime = performance.now();
+    if (currentTime - window.lastFpsTime >= 1000) {
+        const fpsDisplay = document.getElementById('fps');
+        if (fpsDisplay) {
+            fpsDisplay.textContent = `FPS: ${window.frameCount}`;
+        }
+        window.frameCount = 0;
+        window.lastFpsTime = currentTime;
+    }
+    // END FPS Counter
     
     const speedMultiplier = parseFloat(speedSlider.value);
     
