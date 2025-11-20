@@ -48,6 +48,7 @@
         const spinStyle = urlParams.get('spin') || 'wobble';
         const color = urlParams.get('color') || '#ff6060';
         const resolution = parseFloat(urlParams.get('resolution') || '50');
+        const gradientType = urlParams.get('gradient') || null;
 
         const TARGET_FPS = 60;
         const FRAME_INTERVAL = 1000 / TARGET_FPS; // 16.67ms for 60fps
@@ -162,21 +163,114 @@
             textGeometry.computeBoundingBox();
             textGeometry.center();
             
-            // Create materials - solid color only for screensaver.html (gradients not supported via URL params yet)
-            const frontColor = new THREE.Color(color);
-            const sideColor = new THREE.Color(color).multiplyScalar(0.5);
-            
-            const materials = [
-                new THREE.MeshPhongMaterial({ 
-                    color: frontColor,
-                    shininess: 100,
-                    specular: 0x444444
-                }),
-                new THREE.MeshPhongMaterial({ 
-                    color: sideColor,
-                    shininess: 30 
-                })
+            // Create materials - support both solid colors and gradients
+let materials;
+
+if (gradientType) {
+    // Use vertex colors for gradients
+    const bbox = textGeometry.boundingBox;
+    const textHeight = bbox.max.y - bbox.min.y;
+    const minY = bbox.min.y;
+    
+    // Get gradient colors
+    let colorStops;
+    switch(gradientType) {
+        case 'rainbow':
+            colorStops = [
+                { stop: 0, color: new THREE.Color('#E40303') },
+                { stop: 0.2, color: new THREE.Color('#FF8C00') },
+                { stop: 0.4, color: new THREE.Color('#FFED00') },
+                { stop: 0.6, color: new THREE.Color('#008026') },
+                { stop: 0.8, color: new THREE.Color('#24408E') },
+                { stop: 1, color: new THREE.Color('#732982') }
             ];
+            break;
+        case 'trans':
+            colorStops = [
+                { stop: 0, color: new THREE.Color('#5BCEFA') },
+                { stop: 0.25, color: new THREE.Color('#F5A9B8') },
+                { stop: 0.5, color: new THREE.Color('#FFFFFF') },
+                { stop: 0.75, color: new THREE.Color('#F5A9B8') },
+                { stop: 1, color: new THREE.Color('#5BCEFA') }
+            ];
+            break;
+        case 'bisexual':
+            colorStops = [
+                { stop: 0, color: new THREE.Color('#D60270') },
+                { stop: 0.4, color: new THREE.Color('#D60270') },
+                { stop: 0.5, color: new THREE.Color('#9B4F96') },
+                { stop: 0.6, color: new THREE.Color('#0038A8') },
+                { stop: 1, color: new THREE.Color('#0038A8') }
+            ];
+            break;
+        case 'asexual':
+            colorStops = [
+                { stop: 0, color: new THREE.Color('#000000') },
+                { stop: 0.25, color: new THREE.Color('#A3A3A3') },
+                { stop: 0.5, color: new THREE.Color('#FFFFFF') },
+                { stop: 0.75, color: new THREE.Color('#800080') },
+                { stop: 1, color: new THREE.Color('#800080') }
+            ];
+            break;
+        default:
+            // Fallback to solid color if gradient not recognized
+            gradientType = null;
+    }
+    
+    if (colorStops) {
+        // Apply vertex colors based on Y position
+        const colors = [];
+        const positions = textGeometry.attributes.position;
+        
+        for (let i = 0; i < positions.count; i++) {
+            const y = positions.getY(i);
+            const normalizedY = 1 - ((y - minY) / textHeight);
+            
+            let color;
+            if (normalizedY <= colorStops[0].stop) {
+                color = colorStops[0].color.clone();
+            } else if (normalizedY >= colorStops[colorStops.length - 1].stop) {
+                color = colorStops[colorStops.length - 1].color.clone();
+            } else {
+                for (let j = 0; j < colorStops.length - 1; j++) {
+                    if (normalizedY >= colorStops[j].stop && normalizedY <= colorStops[j + 1].stop) {
+                        const t = (normalizedY - colorStops[j].stop) / (colorStops[j + 1].stop - colorStops[j].stop);
+                        color = colorStops[j].color.clone().lerp(colorStops[j + 1].color, t);
+                        break;
+                    }
+                }
+            }
+            
+            colors.push(color.r, color.g, color.b);
+        }
+        
+        textGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        
+        materials = new THREE.MeshPhongMaterial({
+            vertexColors: true,
+            shininess: 100,
+            specular: 0x444444
+        });
+    }
+}
+
+if (!materials) {
+    // Solid color materials
+    const frontColor = new THREE.Color(color);
+    const sideColor = new THREE.Color(color).multiplyScalar(0.5);
+    
+    materials = [
+        new THREE.MeshPhongMaterial({ 
+            color: frontColor,
+            shininess: 100,
+            specular: 0x444444
+        }),
+        new THREE.MeshPhongMaterial({ 
+            color: sideColor,
+            shininess: 30 
+        })
+    ];
+}
 
         // Animation loop
         function animate() {
