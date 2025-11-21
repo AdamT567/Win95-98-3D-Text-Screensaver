@@ -1,6 +1,16 @@
 // 3D Maze Screensaver using Three.js
 // Inspired by the classic Windows 95/98 3D Maze screensaver
 
+let animationFrame = null;
+let lastFrameTime = 0; // ADD THIS LINE
+
+// FPS limiting
+const TARGET_FPS = 60;
+const FRAME_INTERVAL = 1000 / TARGET_FPS;
+
+// Debug mode
+window.mazeDebugMode = false;
+
 let mazeScene, mazeCamera, mazeRenderer;
 let maze = [];
 let mazeSize = 20; // 20x20 maze
@@ -375,6 +385,35 @@ function animateMaze() {
     animationFrame = requestAnimationFrame(animateMaze);
     
     if (!mazeCamera || !mazeRenderer || !mazeScene) return;
+
+    const currentTime = performance.now();
+    const deltaTime = currentTime - lastFrameTime;
+    
+    if (deltaTime < FRAME_INTERVAL) {
+        return;
+    }
+    
+    lastFrameTime = currentTime - (deltaTime % FRAME_INTERVAL);
+    
+    // FPS Counter (only if debug mode enabled)
+    if (window.mazeDebugMode) {
+        if (!window.mazeFrameCount) window.mazeFrameCount = 0;
+        if (!window.mazeLastFpsTime) window.mazeLastFpsTime = performance.now();
+        
+        window.mazeFrameCount++;
+        if (currentTime - window.mazeLastFpsTime >= 1000) {
+            const fpsDisplay = document.getElementById('fps');
+            if (fpsDisplay) {
+                fpsDisplay.textContent = `FPS: ${window.mazeFrameCount}`;
+                fpsDisplay.style.display = 'block';
+            }
+            window.mazeFrameCount = 0;
+            window.mazeLastFpsTime = currentTime;
+        }
+    } else {
+        const fpsDisplay = document.getElementById('fps');
+        if (fpsDisplay) fpsDisplay.style.display = 'none';
+    }
     
     // Handle turning
     if (isTurning) {
@@ -467,6 +506,7 @@ function startMazeAnimation() {
     if (animationFrame) {
         cancelAnimationFrame(animationFrame);
     }
+    lastFrameTime = performance.now(); // INITIALIZE THE TIMER
     animateMaze();
 }
 
