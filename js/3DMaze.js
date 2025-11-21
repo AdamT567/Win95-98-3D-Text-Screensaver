@@ -14,6 +14,7 @@ let playerAngle = 0;
 let moveSpeed = 0.08;
 let turnSpeed = 0.03;
 let animationFrame = null;
+let lastFrameTime = 0;
 
 // Navigation state
 let isMoving = false;
@@ -26,6 +27,13 @@ let currentDirection = 0; // 0: North, 1: East, 2: South, 3: West
 let wallTextureType = 'brick';
 let floorTextureType = 'wood';
 let ceilingTextureType = 'ceiling';
+
+// FPS limiting
+const TARGET_FPS = 60;
+const FRAME_INTERVAL = 1000 / TARGET_FPS; // 16.67ms for 60fps
+
+// Debug mode
+window.mazeDebugMode = false;
 
 // Maze generation
 function generateMaze(size) {
@@ -333,7 +341,6 @@ function updateCameraPosition() {
     
     mazeCamera.position.x = worldX;
     mazeCamera.position.z = worldZ;
-    // Fixed: Camera should look in the direction of movement
     mazeCamera.rotation.y = -playerAngle;
 }
 
@@ -343,7 +350,7 @@ function canMove(x, z, direction) {
     return maze[z][x][direction] === 0;
 }
 
-// pathfinding algorithm
+// Get next move using right-hand rule
 function getNextMove() {
     const rightDir = (currentDirection + 1) % 4;  // Turn right (clockwise)
     const leftDir = (currentDirection + 3) % 4;   // Turn left (counterclockwise)
@@ -376,6 +383,36 @@ function animateMaze() {
     
     if (!mazeCamera || !mazeRenderer || !mazeScene) return;
     
+    // FPS limiting
+    const currentTime = performance.now();
+    const deltaTime = currentTime - lastFrameTime;
+    
+    if (deltaTime < FRAME_INTERVAL) {
+        return;
+    }
+    
+    lastFrameTime = currentTime - (deltaTime % FRAME_INTERVAL);
+    
+    // FPS Counter (only if debug mode enabled)
+    if (window.mazeDebugMode) {
+        if (!window.mazeFrameCount) window.mazeFrameCount = 0;
+        if (!window.mazeLastFpsTime) window.mazeLastFpsTime = performance.now();
+        
+        window.mazeFrameCount++;
+        if (currentTime - window.mazeLastFpsTime >= 1000) {
+            const fpsDisplay = document.getElementById('fps');
+            if (fpsDisplay) {
+                fpsDisplay.textContent = `FPS: ${window.mazeFrameCount}`;
+                fpsDisplay.style.display = 'block';
+            }
+            window.mazeFrameCount = 0;
+            window.mazeLastFpsTime = currentTime;
+        }
+    } else {
+        const fpsDisplay = document.getElementById('fps');
+        if (fpsDisplay) fpsDisplay.style.display = 'none';
+    }
+    
     // Handle turning
     if (isTurning) {
         const angleDiff = targetAngle - playerAngle;
@@ -393,7 +430,6 @@ function animateMaze() {
                 isMoving = true;
                 moveProgress = 0;
             }
-            // If can't move forward after turning, next frame will turn again
         } else {
             playerAngle += Math.sign(normalizedDiff) * turnSpeed;
             updateCameraPosition();
@@ -450,6 +486,7 @@ function animateMaze() {
         }
     }
     
+    // Render
     mazeRenderer.render(mazeScene, mazeCamera);
 }
 
