@@ -345,35 +345,20 @@ function canMove(x, z, direction) {
 
 // Get next move using left-hand rule (left-wall follower)
 function getNextMove() {
-    const dirs = [
-        { dx: 0, dz: -1 }, // North
-        { dx: 1, dz: 0 },  // East
-        { dx: 0, dz: 1 },  // South
-        { dx: -1, dz: 0 }  // West
-    ];
+    const leftDir = (currentDirection + 3) % 4;  // Left turn (counterclockwise)
     
-    // Left-hand rule: try left, then forward, then right, then back
-    const leftDir = (currentDirection + 3) % 4;  // Turn left (counterclockwise)
-    const rightDir = (currentDirection + 1) % 4; // Turn right (clockwise)
-    const backDir = (currentDirection + 2) % 4;  // Turn around
-    
-    // Try turning left and moving
+    // Priority 1: Check if can turn left - if yes, turn left and move
     if (canMove(playerX, playerZ, leftDir)) {
         return { turn: leftDir, move: true };
     }
     
-    // Try moving forward
+    // Priority 2: Check if can go forward - if yes, go forward
     if (canMove(playerX, playerZ, currentDirection)) {
         return { turn: currentDirection, move: true };
     }
     
-    // Try turning right and moving
-    if (canMove(playerX, playerZ, rightDir)) {
-        return { turn: rightDir, move: true };
-    }
-    
-    // Turn around (no move)
-    return { turn: backDir, move: false };
+    // Priority 3: Dead end - turn left (but don't move yet)
+    return { turn: leftDir, move: false };
 }
 
 // Animation loop
@@ -393,6 +378,9 @@ function animateMaze() {
             currentDirection = Math.round(targetAngle / (Math.PI / 2)) % 4;
             if (currentDirection < 0) currentDirection += 4;
             updateCameraPosition();
+            
+            // If this was a turning move (not a dead-end turn), start moving
+            // Otherwise, fall through to get next move
         } else {
             playerAngle += Math.sign(normalizedDiff) * turnSpeed;
             updateCameraPosition();
@@ -406,21 +394,18 @@ function animateMaze() {
             moveProgress = 0;
             isMoving = false;
             
-            // Update grid position AFTER move completes
             const dirs = [
-                { dx: 0, dz: -1 }, // North
-                { dx: 1, dz: 0 },  // East
-                { dx: 0, dz: 1 },  // South
-                { dx: -1, dz: 0 }  // West
+                { dx: 0, dz: -1 },
+                { dx: 1, dz: 0 },
+                { dx: 0, dz: 1 },
+                { dx: -1, dz: 0 }
             ];
             const dir = dirs[currentDirection];
             playerX += dir.dx;
             playerZ += dir.dz;
             
-            // Update camera to new grid position
             updateCameraPosition();
         } else {
-            // Interpolate position during movement
             const dirs = [
                 { dx: 0, dz: -1 },
                 { dx: 1, dz: 0 },
@@ -441,19 +426,28 @@ function animateMaze() {
     else {
         const nextMove = getNextMove();
         
-        // Always turn first if direction changes
         if (nextMove.turn !== currentDirection) {
+            // Need to turn
             targetAngle = nextMove.turn * Math.PI / 2;
             isTurning = true;
-        }
-        // Only move if we're facing the right direction and can move
-        else if (nextMove.move && canMove(playerX, playerZ, currentDirection)) {
+            // Store whether we should move after turning
+            window.shouldMoveAfterTurn = nextMove.move;
+        } else if (nextMove.move) {
+            // Already facing correct direction, just move
             isMoving = true;
             moveProgress = 0;
         }
     }
     
-    // Render
+    // After completing a turn, check if we should move
+    if (!isTurning && !isMoving && window.shouldMoveAfterTurn) {
+        if (canMove(playerX, playerZ, currentDirection)) {
+            isMoving = true;
+            moveProgress = 0;
+        }
+        window.shouldMoveAfterTurn = false;
+    }
+    
     mazeRenderer.render(mazeScene, mazeCamera);
 }
 
