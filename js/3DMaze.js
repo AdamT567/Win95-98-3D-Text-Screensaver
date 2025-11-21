@@ -11,8 +11,8 @@ let wallHeight = 5;
 let playerX = 0;
 let playerZ = 0;
 let playerAngle = 0;
-let moveSpeed = 0.05;
-let turnSpeed = 0.02;
+let moveSpeed = 0.08;
+let turnSpeed = 0.03;
 let animationFrame = null;
 
 // Navigation state
@@ -22,8 +22,14 @@ let targetAngle = 0;
 let moveProgress = 0;
 let currentDirection = 0; // 0: North, 1: East, 2: South, 3: West
 
+// Texture settings
+let wallTextureType = 'brick';
+let floorTextureType = 'wood';
+let ceilingTextureType = 'ceiling';
+
 // Maze generation
 function generateMaze(size) {
+    console.log('Generating new maze with size:', size);
     // Initialize maze with all walls
     const m = [];
     for (let i = 0; i < size; i++) {
@@ -62,7 +68,8 @@ function generateMaze(size) {
         return neighbors;
     }
     
-    // Start from random cell
+    // Start from random cell - use current timestamp for better randomness
+    const randomSeed = Date.now();
     let currentX = Math.floor(Math.random() * size);
     let currentZ = Math.floor(Math.random() * size);
     visited.add(cellKey(currentX, currentZ));
@@ -89,6 +96,7 @@ function generateMaze(size) {
         }
     }
     
+    console.log('Maze generated successfully');
     return m;
 }
 
@@ -325,7 +333,8 @@ function updateCameraPosition() {
     
     mazeCamera.position.x = worldX;
     mazeCamera.position.z = worldZ;
-    mazeCamera.rotation.y = -playerAngle + Math.PI;
+    // Fixed: Camera should look in the direction of movement
+    mazeCamera.rotation.y = -playerAngle;
 }
 
 // Check if can move in direction
@@ -336,8 +345,6 @@ function canMove(x, z, direction) {
 
 // Get next move using right-hand rule
 function getNextMove() {
-    // Try right first
-    const rightDir = (currentDirection + 1) % 4;
     const dirs = [
         { dx: 0, dz: -1 }, // North
         { dx: 1, dz: 0 },  // East
@@ -345,24 +352,27 @@ function getNextMove() {
         { dx: -1, dz: 0 }  // West
     ];
     
-    // Check right
+    // Right-hand rule: try right, then forward, then left, then back
+    const rightDir = (currentDirection + 1) % 4;
+    const leftDir = (currentDirection + 3) % 4;
+    const backDir = (currentDirection + 2) % 4;
+    
+    // Try turning right and moving
     if (canMove(playerX, playerZ, rightDir)) {
         return { turn: rightDir, move: true };
     }
     
-    // Check forward
+    // Try moving forward
     if (canMove(playerX, playerZ, currentDirection)) {
         return { turn: currentDirection, move: true };
     }
     
-    // Check left
-    const leftDir = (currentDirection + 3) % 4;
+    // Try turning left and moving
     if (canMove(playerX, playerZ, leftDir)) {
         return { turn: leftDir, move: true };
     }
     
-    // Turn around
-    const backDir = (currentDirection + 2) % 4;
+    // Turn around (no move)
     return { turn: backDir, move: false };
 }
 
@@ -377,15 +387,16 @@ function animateMaze() {
         const angleDiff = targetAngle - playerAngle;
         const normalizedDiff = Math.atan2(Math.sin(angleDiff), Math.cos(angleDiff));
         
-        if (Math.abs(normalizedDiff) < 0.01) {
+        if (Math.abs(normalizedDiff) < 0.05) {
             playerAngle = targetAngle;
             isTurning = false;
-            currentDirection = Math.round(playerAngle / (Math.PI / 2)) % 4;
+            currentDirection = Math.round(targetAngle / (Math.PI / 2)) % 4;
             if (currentDirection < 0) currentDirection += 4;
+            updateCameraPosition();
         } else {
             playerAngle += Math.sign(normalizedDiff) * turnSpeed;
+            updateCameraPosition();
         }
-        updateCameraPosition();
     }
     // Handle moving
     else if (isMoving) {
@@ -395,7 +406,7 @@ function animateMaze() {
             moveProgress = 0;
             isMoving = false;
             
-            // Update grid position
+            // Update grid position AFTER move completes
             const dirs = [
                 { dx: 0, dz: -1 }, // North
                 { dx: 1, dz: 0 },  // East
@@ -405,36 +416,38 @@ function animateMaze() {
             const dir = dirs[currentDirection];
             playerX += dir.dx;
             playerZ += dir.dz;
+            
+            // Update camera to new grid position
+            updateCameraPosition();
+        } else {
+            // Interpolate position during movement
+            const dirs = [
+                { dx: 0, dz: -1 },
+                { dx: 1, dz: 0 },
+                { dx: 0, dz: 1 },
+                { dx: -1, dz: 0 }
+            ];
+            const dir = dirs[currentDirection];
+            const startX = (playerX - mazeSize / 2) * cellSize;
+            const startZ = (playerZ - mazeSize / 2) * cellSize;
+            const targetX = startX + dir.dx * cellSize;
+            const targetZ = startZ + dir.dz * cellSize;
+            
+            mazeCamera.position.x = startX + (targetX - startX) * moveProgress;
+            mazeCamera.position.z = startZ + (targetZ - startZ) * moveProgress;
         }
-        
-        // Interpolate position
-        const dirs = [
-            { dx: 0, dz: -1 },
-            { dx: 1, dz: 0 },
-            { dx: 0, dz: 1 },
-            { dx: -1, dz: 0 }
-        ];
-        const dir = dirs[currentDirection];
-        const startX = (playerX - mazeSize / 2) * cellSize;
-        const startZ = (playerZ - mazeSize / 2) * cellSize;
-        const targetX = startX + dir.dx * cellSize;
-        const targetZ = startZ + dir.dz * cellSize;
-        
-        mazeCamera.position.x = startX + (targetX - startX) * moveProgress;
-        mazeCamera.position.z = startZ + (targetZ - startZ) * moveProgress;
-        mazeCamera.rotation.y = -playerAngle + Math.PI;
     }
     // Get next move
     else {
         const nextMove = getNextMove();
         
-        // Turn to new direction
+        // Always turn first if direction changes
         if (nextMove.turn !== currentDirection) {
             targetAngle = nextMove.turn * Math.PI / 2;
             isTurning = true;
         }
-        // Move forward
-        else if (nextMove.move) {
+        // Only move if we're facing the right direction and can move
+        else if (nextMove.move && canMove(playerX, playerZ, currentDirection)) {
             isMoving = true;
             moveProgress = 0;
         }
