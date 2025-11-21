@@ -343,22 +343,31 @@ function canMove(x, z, direction) {
     return maze[z][x][direction] === 0;
 }
 
-// Get next move using left-hand rule (left-wall follower)
+// pathfinding algorithm
 function getNextMove() {
-    const leftDir = (currentDirection + 3) % 4;  // Left turn (counterclockwise)
+    const rightDir = (currentDirection + 1) % 4;  // Turn right (clockwise)
+    const leftDir = (currentDirection + 3) % 4;   // Turn left (counterclockwise)
     
-    // Priority 1: Check if can turn left - if yes, turn left and move
-    if (canMove(playerX, playerZ, leftDir)) {
-        return { turn: leftDir, move: true };
+    // Right-hand rule (right-wall follower):
+    // Priority: right, forward, left, then turn right again
+    
+    // 1. Check right - if open, turn right
+    if (canMove(playerX, playerZ, rightDir)) {
+        return { turn: rightDir, move: true };
     }
     
-    // Priority 2: Check if can go forward - if yes, go forward
+    // 2. Check forward - if open, go forward
     if (canMove(playerX, playerZ, currentDirection)) {
         return { turn: currentDirection, move: true };
     }
     
-    // Priority 3: Dead end - turn left (but don't move yet)
-    return { turn: leftDir, move: false };
+    // 3. Check left - if open, turn left
+    if (canMove(playerX, playerZ, leftDir)) {
+        return { turn: leftDir, move: true };
+    }
+    
+    // 4. Dead end - turn right (will eventually face an open direction)
+    return { turn: rightDir, move: false };
 }
 
 // Animation loop
@@ -379,8 +388,12 @@ function animateMaze() {
             if (currentDirection < 0) currentDirection += 4;
             updateCameraPosition();
             
-            // If this was a turning move (not a dead-end turn), start moving
-            // Otherwise, fall through to get next move
+            // After turning completes, check if we should move forward
+            if (canMove(playerX, playerZ, currentDirection)) {
+                isMoving = true;
+                moveProgress = 0;
+            }
+            // If can't move forward after turning, next frame will turn again
         } else {
             playerAngle += Math.sign(normalizedDiff) * turnSpeed;
             updateCameraPosition();
@@ -430,22 +443,11 @@ function animateMaze() {
             // Need to turn
             targetAngle = nextMove.turn * Math.PI / 2;
             isTurning = true;
-            // Store whether we should move after turning
-            window.shouldMoveAfterTurn = nextMove.move;
         } else if (nextMove.move) {
             // Already facing correct direction, just move
             isMoving = true;
             moveProgress = 0;
         }
-    }
-    
-    // After completing a turn, check if we should move
-    if (!isTurning && !isMoving && window.shouldMoveAfterTurn) {
-        if (canMove(playerX, playerZ, currentDirection)) {
-            isMoving = true;
-            moveProgress = 0;
-        }
-        window.shouldMoveAfterTurn = false;
     }
     
     mazeRenderer.render(mazeScene, mazeCamera);
