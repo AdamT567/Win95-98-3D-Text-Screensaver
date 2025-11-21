@@ -412,8 +412,8 @@ function animateScreensaver() {
         textMesh.rotation.z = 0;
     } else if (window.currentSpin === 'see-saw') {
     // Rocks back and forth on Z axis only
-    seesawAngle += 0.03 * speedMultiplier;  // ← Doubled speed (2x faster)
-    textMesh.rotation.z = Math.sin(seesawAngle) * 0.3;
+    seesawAngle += 0.05 * speedMultiplier;
+    textMesh.rotation.z = Math.sin(seesawAngle) * 0.5;
     textMesh.rotation.x = 0;
     textMesh.rotation.y = 0;
     } else if (window.currentSpin === 'none') {
