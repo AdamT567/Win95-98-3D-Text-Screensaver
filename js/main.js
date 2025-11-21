@@ -1,5 +1,7 @@
 // Main UI logic and event handlers
 
+let currentScreensaver = '3dtext'; // Track which screensaver is active
+
 // Clock functionality
 function updateClock() {
     const now = new Date();
@@ -9,7 +11,14 @@ function updateClock() {
     document.getElementById('clock').textContent = `${hours}:${minutes} ${ampm}`;
 }
 
-// Update preview settings
+// Handle screensaver selection change
+function onScreensaverChange() {
+    const select = document.getElementById('screensaverSelect');
+    currentScreensaver = select.value;
+    console.log('Screensaver changed to:', currentScreensaver);
+}
+
+// Update preview settings for 3D Text
 function updatePreview() {
     const spinStyle = document.getElementById('spinStyle').value;
     
@@ -25,8 +34,6 @@ function updatePreview() {
     if (window.screensaverInitialized && window.updateScreensaverText) {
         window.updateScreensaverText();
     }
-    
-    // Don't update URL automatically anymore - only on OK button
 }
 
 // Update for live preview when adjusting settings
@@ -41,7 +48,7 @@ function updateLivePreview() {
     }
 }
 
-// Generate URL for OBS
+// Generate URL for OBS - 3D Text
 function updateUrl() {
     const textInput = document.getElementById('textInput').value;
     const isText = document.getElementById('text').checked;
@@ -51,10 +58,8 @@ function updateUrl() {
     const color = document.getElementById('colorPicker').value;
     const resolution = document.getElementById('resSlider').value;
     
-    // Check if gradient is selected
     const isTextured = document.getElementById('textured').checked;
     
-    // DEBUG: Log the current state
     console.log('=== updateUrl() Debug ===');
     console.log('isTextured:', isTextured);
     console.log('window.currentGradient:', window.currentGradient);
@@ -68,31 +73,43 @@ function updateUrl() {
         resolution: resolution
     });
     
-    // Add gradient parameter if textured is selected
     if (isTextured && window.currentGradient) {
         params.set('gradient', window.currentGradient);
         console.log('✓ Added gradient to URL:', window.currentGradient);
-    } else {
-        console.log('✗ Gradient NOT added. isTextured:', isTextured, 'currentGradient:', window.currentGradient);
     }
     
-    // Add debug parameter if checkbox is checked
     const debugCheckbox = document.getElementById('password');
     if (debugCheckbox && debugCheckbox.checked) {
         params.set('debug', 'true');
-        console.log('✓ Debug mode enabled in URL');
     }
     
     const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
     const url = baseUrl + '3DText.html?' + params.toString();
     
     console.log('Generated URL:', url);
-    console.log('======================');
     
     document.getElementById('urlOutput').value = url;
 }
 
-// Copy URL to clipboard
+// Generate URL for OBS - 3D Maze
+function updateMazeUrl() {
+    const mazeSize = document.getElementById('mazeSizeSlider').value;
+    const mazeSpeed = document.getElementById('mazeSpeedSlider').value;
+    
+    const params = new URLSearchParams({
+        size: mazeSize,
+        speed: mazeSpeed
+    });
+    
+    const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
+    const url = baseUrl + '3DMaze.html?' + params.toString();
+    
+    console.log('Generated Maze URL:', url);
+    
+    document.getElementById('mazeUrlOutput').value = url;
+}
+
+// Copy URL to clipboard - 3D Text
 function copyUrl() {
     const urlInput = document.getElementById('urlOutput');
     urlInput.select();
@@ -106,52 +123,90 @@ function copyUrl() {
     }, 2000);
 }
 
-// Reset to defaults
+// Copy URL to clipboard - 3D Maze
+function copyMazeUrl() {
+    const urlInput = document.getElementById('mazeUrlOutput');
+    urlInput.select();
+    document.execCommand('copy');
+    
+    const btn = document.getElementById('copyMazeUrlBtn');
+    const originalText = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => {
+        btn.textContent = originalText;
+    }, 2000);
+}
+
+// Update maze size display
+function updateMazeSizeDisplay() {
+    const size = document.getElementById('mazeSizeSlider').value;
+    document.getElementById('mazeSizeDisplay').textContent = `${size}x${size}`;
+}
+
+// Reset to defaults - 3D Text
 function resetToDefaults() {
     document.getElementById('textInput').value = 'Goblinz Rule';
     document.getElementById('text').checked = true;
     document.getElementById('sizeSlider').value = 42;
-    document.getElementById('speedSlider').value = 1.6
+    document.getElementById('speedSlider').value = 1.6;
     document.getElementById('resSlider').value = 250;
     document.getElementById('spinStyle').value = 'wobble';
     document.getElementById('colorPicker').value = '#ff6060';
     updatePreview();
 }
 
+// Reset to defaults - 3D Maze
+function resetMazeDefaults() {
+    document.getElementById('mazeSizeSlider').value = 20;
+    document.getElementById('mazeSpeedSlider').value = 1;
+    updateMazeSizeDisplay();
+}
+
 // Preview button handler
 function handlePreview() {
-    console.log('Preview button clicked');
-    console.log('Screensaver initialized?', window.screensaverInitialized);
-    console.log('textMesh exists?', window.textMesh !== undefined);
+    console.log('Preview button clicked, screensaver:', currentScreensaver);
     
-    updatePreview();
-    
-    // Show overlay
-    document.getElementById('previewOverlay').classList.add('active');
-    
-    // Check if screensaver is ready
-    if (window.screensaverInitialized) {
-        console.log('Starting preview animation');
-        window.resetScreensaverPosition();
-        window.startScreensaverAnimation();
-    } else {
-        console.log('Screensaver still initializing, will start when ready');
-        // Wait for initialization
-        const checkInterval = setInterval(() => {
-            if (window.screensaverInitialized) {
-                console.log('Screensaver ready, starting animation');
-                clearInterval(checkInterval);
-                window.resetScreensaverPosition();
-                window.startScreensaverAnimation();
-            }
-        }, 100);
+    if (currentScreensaver === '3dtext') {
+        updatePreview();
+        document.getElementById('previewOverlay').classList.add('active');
+        
+        if (window.screensaverInitialized) {
+            console.log('Starting 3D Text preview');
+            window.resetScreensaverPosition();
+            window.startScreensaverAnimation();
+        } else {
+            const checkInterval = setInterval(() => {
+                if (window.screensaverInitialized) {
+                    console.log('3D Text ready, starting animation');
+                    clearInterval(checkInterval);
+                    window.resetScreensaverPosition();
+                    window.startScreensaverAnimation();
+                }
+            }, 100);
+        }
+    } else if (currentScreensaver === '3dmaze') {
+        console.log('Starting 3D Maze preview');
+        document.getElementById('previewOverlay').classList.add('active');
+        
+        // Initialize maze if not already done
+        if (!window.mazeInitialized) {
+            window.initMazeScene();
+            window.mazeInitialized = true;
+        }
+        
+        window.startMazeAnimation();
     }
 }
 
 // Close preview
 function closePreview() {
     document.getElementById('previewOverlay').classList.remove('active');
-    window.stopScreensaverAnimation();
+    
+    if (currentScreensaver === '3dtext') {
+        window.stopScreensaverAnimation();
+    } else if (currentScreensaver === '3dmaze') {
+        window.stopMazeAnimation();
+    }
 }
 
 // Texture window management
@@ -164,40 +219,55 @@ let dragOffsetY = 0;
 function openDisplayProperties() {
     const displayWindow = document.getElementById('displayPropertiesWindow');
     const textSetupWindow = document.getElementById('textSetupWindow');
+    const mazeSetupWindow = document.getElementById('mazeSetupWindow');
     
     displayWindow.style.display = 'flex';
     displayWindow.classList.remove('inactive');
     
-    // Make text setup window inactive if it's open
     if (textSetupWindow && textSetupWindow.style.display !== 'none') {
         textSetupWindow.classList.add('inactive');
+    }
+    if (mazeSetupWindow && mazeSetupWindow.style.display !== 'none') {
+        mazeSetupWindow.classList.add('inactive');
     }
 }
 
 function closeDisplayProperties() {
     const displayWindow = document.getElementById('displayPropertiesWindow');
     const textSetupWindow = document.getElementById('textSetupWindow');
+    const mazeSetupWindow = document.getElementById('mazeSetupWindow');
     
-    // Only allow closing if text setup window is closed
-    if (!textSetupWindow || textSetupWindow.style.display === 'none') {
+    if ((!textSetupWindow || textSetupWindow.style.display === 'none') &&
+        (!mazeSetupWindow || mazeSetupWindow.style.display === 'none')) {
         displayWindow.style.display = 'none';
     }
 }
 
 function openSettings() {
     const displayWindow = document.getElementById('displayPropertiesWindow');
-    const textSetupWindow = document.getElementById('textSetupWindow');
     
-    console.log('Opening settings window');
+    console.log('Opening settings for:', currentScreensaver);
     
-    // Show and activate text setup window
-    textSetupWindow.style.display = 'flex';
-    textSetupWindow.classList.remove('inactive');
+    // Show appropriate settings window
+    if (currentScreensaver === '3dtext') {
+        const textSetupWindow = document.getElementById('textSetupWindow');
+        textSetupWindow.style.display = 'flex';
+        textSetupWindow.classList.remove('inactive');
+        
+        document.getElementById('mazeSetupWindow').style.display = 'none';
+    } else if (currentScreensaver === '3dmaze') {
+        const mazeSetupWindow = document.getElementById('mazeSetupWindow');
+        mazeSetupWindow.style.display = 'flex';
+        mazeSetupWindow.classList.remove('inactive');
+        
+        document.getElementById('textSetupWindow').style.display = 'none';
+        
+        // Update maze URL
+        updateMazeUrl();
+    }
     
-    // Make display properties inactive and "locked"
     displayWindow.classList.add('inactive');
     
-    // Disable display properties close button
     const displayPropsCloseBtn = document.getElementById('displayPropsCloseBtn');
     if (displayPropsCloseBtn) {
         displayPropsCloseBtn.style.opacity = '0.5';
@@ -209,16 +279,15 @@ function openSettings() {
 function closeSettings() {
     const displayWindow = document.getElementById('displayPropertiesWindow');
     const textSetupWindow = document.getElementById('textSetupWindow');
+    const mazeSetupWindow = document.getElementById('mazeSetupWindow');
     
     console.log('Closing settings window');
     
-    // Hide text setup window
     textSetupWindow.style.display = 'none';
+    mazeSetupWindow.style.display = 'none';
     
-    // Reactivate display properties window
     displayWindow.classList.remove('inactive');
     
-    // Re-enable display properties close button
     const displayPropsCloseBtn = document.getElementById('displayPropsCloseBtn');
     if (displayPropsCloseBtn) {
         displayPropsCloseBtn.style.opacity = '1';
@@ -236,12 +305,10 @@ function makeWindowDraggable(windowElement, titleBarElement) {
     let initialY;
     
     titleBarElement.addEventListener('mousedown', function(e) {
-        // Don't drag if clicking on buttons
         if (e.target.tagName === 'BUTTON' || e.target.tagName === 'IMG') {
             return;
         }
         
-        // Don't drag if window is inactive
         if (windowElement.classList.contains('inactive')) {
             return;
         }
@@ -265,7 +332,6 @@ function makeWindowDraggable(windowElement, titleBarElement) {
         
         windowElement.style.left = currentX + 'px';
         windowElement.style.top = currentY + 'px';
-        // windowElement.style.transform = 'none'; // Removes transform, not needed right now
     });
     
     document.addEventListener('mouseup', function() {
@@ -276,18 +342,12 @@ function makeWindowDraggable(windowElement, titleBarElement) {
     });
 }
 
-function isTextSetupOpen() {
-    const textSetupWindow = document.querySelector('.text-setup-window');
-    return textSetupWindow.style.display !== 'none' && !textSetupWindow.classList.contains('inactive');
-}
-
-// Opens Texture Window to select Gradient
+// Opens Texture Window
 function openTextureWindow() {
     console.log('Opening texture window');
     const textureWindow = document.getElementById('textureWindow');
     textureWindow.style.display = 'block';
     
-    // Reset selection
     selectedGradient = null;
     document.querySelectorAll('input[name="gradientSelect"]').forEach(radio => {
         radio.checked = false;
@@ -307,9 +367,7 @@ function selectGradient(gradientType) {
 function applyTexture() {
     console.log('Applying texture:', selectedGradient);
     if (selectedGradient) {
-        // Set textured radio button
         document.getElementById('textured').checked = true;
-        // Store gradient type for use in screensaver
         window.currentGradient = selectedGradient;
         updateLivePreview();
     }
@@ -347,7 +405,7 @@ function makeDraggable() {
         
         textureWindow.style.left = newX + 'px';
         textureWindow.style.top = newY + 'px';
-        textureWindow.style.transform = 'none'; // Remove centering transform
+        textureWindow.style.transform = 'none';
     });
     
     document.addEventListener('mouseup', function() {
@@ -365,17 +423,16 @@ window.closeTextureWindow = closeTextureWindow;
 window.selectGradient = selectGradient;
 window.applyTexture = applyTexture;
 window.cancelTexture = cancelTexture;
+window.onScreensaverChange = onScreensaverChange;
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded');
     console.log('THREE.js available?', typeof THREE !== 'undefined');
     
-    
-    // Check if THREE.js loaded
     if (typeof THREE === 'undefined') {
-        console.error('THREE.js failed to load! This is required for the screensaver.');
-        document.body.innerHTML = '<div style="color: white; padding: 50px; font-size: 24px;">ERROR: THREE.js failed to load. Check console for details.</div>';
+        console.error('THREE.js failed to load!');
+        document.body.innerHTML = '<div style="color: white; padding: 50px; font-size: 24px;">ERROR: THREE.js failed to load.</div>';
         return;
     }
     
@@ -383,156 +440,69 @@ document.addEventListener('DOMContentLoaded', function() {
     updateClock();
     setInterval(updateClock, 1000);
     
-    // IMPORTANT: Initialize screensaver immediately on page load
-    console.log('Initializing screensaver on page load...');
+    // Initialize 3D Text screensaver on page load
+    console.log('Initializing 3D Text screensaver...');
     initScreensaver();
     
-    // Initialize URL
+    // Initialize URLs
     updateUrl();
+    updateMazeUrl();
     
-    // Initialize draggable texture window
+    // Initialize draggable windows
     makeDraggable();
     
-    // Input event listeners - use updateLivePreview for settings that need immediate visual feedback
+    // 3D Text event listeners
     document.getElementById('textInput').addEventListener('input', updateLivePreview);
     document.getElementById('text').addEventListener('change', updateLivePreview);
     document.getElementById('time').addEventListener('change', updateLivePreview);
     document.getElementById('sizeSlider').addEventListener('input', updateLivePreview);
-    document.getElementById('speedSlider').addEventListener('input', updatePreview); // Speed doesn't need mesh recreation
+    document.getElementById('speedSlider').addEventListener('input', updatePreview);
     document.getElementById('resSlider').addEventListener('input', updateLivePreview);
-    document.getElementById('spinStyle').addEventListener('change', updatePreview); // Spin doesn't need mesh recreation
+    document.getElementById('spinStyle').addEventListener('change', updatePreview);
     document.getElementById('colorPicker').addEventListener('input', updateLivePreview);
+    
+    // 3D Maze event listeners
+    document.getElementById('mazeSizeSlider').addEventListener('input', function() {
+        updateMazeSizeDisplay();
+        updateMazeUrl();
+    });
+    document.getElementById('mazeSpeedSlider').addEventListener('input', updateMazeUrl);
     
     // Button event listeners
     document.getElementById('previewBtn').addEventListener('click', handlePreview);
     document.getElementById('cancelBtn').addEventListener('click', resetToDefaults);
     document.getElementById('okBtn').addEventListener('click', updateUrl);
     document.getElementById('copyUrlBtn').addEventListener('click', copyUrl);
+    document.getElementById('mazeCancelBtn').addEventListener('click', resetMazeDefaults);
+    document.getElementById('mazeOkBtn').addEventListener('click', updateMazeUrl);
+    document.getElementById('copyMazeUrlBtn').addEventListener('click', copyMazeUrl);
     document.getElementById('previewOverlay').addEventListener('click', closePreview);
     
-    // Texture button - with detailed debugging
-    console.log('Looking for texture button...');
+    // Texture button
     const textureBtn = document.getElementById('textureBtn');
-    console.log('Texture button found:', textureBtn);
-    
     if (textureBtn) {
-        console.log('Adding click listener to texture button');
         textureBtn.addEventListener('click', function(e) {
-            console.log('Texture button clicked!');
             e.preventDefault();
             e.stopPropagation();
             openTextureWindow();
         });
-        
-        // Test if button can be clicked
-        console.log('Texture button is:', {
-            tagName: textureBtn.tagName,
-            className: textureBtn.className,
-            id: textureBtn.id,
-            disabled: textureBtn.disabled
-        });
-    } else {
-        console.error('Texture button not found! Checking all buttons...');
-        const allButtons = document.querySelectorAll('.button');
-        console.log('All buttons found:', allButtons.length);
-        allButtons.forEach((btn, index) => {
-            console.log(`Button ${index}:`, btn.textContent, 'ID:', btn.id);
-        });
     }
     
-    // Check if loaded with parameters (OBS mode)
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    if (urlParams.toString()) {
-        console.log('OBS mode detected with parameters:', urlParams.toString());
-        
-        // Apply URL parameters
-        if (urlParams.has('text')) {
-            const text = urlParams.get('text');
-            if (text === 'time') {
-                document.getElementById('time').checked = true;
-            } else {
-                document.getElementById('textInput').value = text;
-            }
-        }
-        if (urlParams.has('size')) {
-            document.getElementById('sizeSlider').value = urlParams.get('size');
-        }
-        if (urlParams.has('speed')) {
-            document.getElementById('speedSlider').value = urlParams.get('speed');
-        }
-        if (urlParams.has('spin')) {
-            document.getElementById('spinStyle').value = urlParams.get('spin');
-        }
-        if (urlParams.has('color')) {
-            document.getElementById('colorPicker').value = urlParams.get('color');
-        }
-        if (urlParams.has('resolution')) {
-            document.getElementById('resSlider').value = urlParams.get('resolution');
-        }
-        
-        updatePreview();
-        
-        console.log('Waiting for screensaver initialization...');
-        
-        // Wait for screensaver to be ready, then go fullscreen for OBS
-        let attempts = 0;
-        const maxAttempts = 100; // 10 seconds max
-        const waitForInit = setInterval(() => {
-            attempts++;
-            
-            if (window.screensaverInitialized) {
-                console.log('Screensaver ready! Starting OBS mode...');
-                clearInterval(waitForInit);
-                
-                // Hide desktop elements in OBS mode
-                document.querySelector('.desktop').style.display = 'none';
-                document.querySelector('.taskbar').style.display = 'none';
-                
-                window.resetScreensaverPosition();
-                document.getElementById('previewOverlay').classList.add('active');
-                window.startScreensaverAnimation();
-                
-                console.log('OBS mode fully initialized');
-            } else if (attempts >= maxAttempts) {
-                console.error('Screensaver failed to initialize after 10 seconds');
-                clearInterval(waitForInit);
-            } else {
-                console.log(`Waiting for screensaver... (${attempts}/${maxAttempts})`);
-            }
-        }, 100);
-    }
-    
-    // Add listener for when user manually clicks solid radio
+    // Solid/textured radio listeners
     const solidRadio = document.getElementById('solid');
     if (solidRadio) {
         solidRadio.addEventListener('change', function() {
             if (this.checked) {
-                // User switched to solid color, clear gradient
                 window.currentGradient = null;
-                console.log('Switched to solid color, cleared gradient');
             }
         });
     }
     
-    // Add listener for when user manually clicks textured radio
-    const texturedRadio = document.getElementById('textured');
-    if (texturedRadio) {
-        texturedRadio.addEventListener('change', function() {
-            if (this.checked) {
-                console.log('Textured mode selected');
-            }
-        });
-    }
-    
-    // Secret debug mode - password checkbox toggles FPS display
+    // Debug mode toggle
     const passwordCheckbox = document.getElementById('password');
     if (passwordCheckbox) {
         passwordCheckbox.addEventListener('change', function() {
             window.debugMode = this.checked;
-            console.log('Debug mode:', window.debugMode ? 'ENABLED' : 'DISABLED');
-            
-            // Update FPS display immediately if preview is active
             const fpsDisplay = document.getElementById('fps');
             if (fpsDisplay) {
                 fpsDisplay.style.display = window.debugMode ? 'block' : 'none';
@@ -551,6 +521,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const displayTitleBar = document.getElementById('displayPropsTitleBar');
     const textSetupWindow = document.getElementById('textSetupWindow');
     const textSetupTitleBar = document.getElementById('textSetupTitleBar');
+    const mazeSetupWindow = document.getElementById('mazeSetupWindow');
+    const mazeSetupTitleBar = document.getElementById('mazeSetupTitleBar');
     
     if (displayWindow && displayTitleBar) {
         makeWindowDraggable(displayWindow, displayTitleBar);
@@ -560,12 +532,17 @@ document.addEventListener('DOMContentLoaded', function() {
         makeWindowDraggable(textSetupWindow, textSetupTitleBar);
     }
     
-    // Add click handlers to activate windows
+    if (mazeSetupWindow && mazeSetupTitleBar) {
+        makeWindowDraggable(mazeSetupWindow, mazeSetupTitleBar);
+    }
+    
+    // Window activation handlers
     if (displayWindow) {
         displayWindow.addEventListener('mousedown', function() {
             const textSetup = document.getElementById('textSetupWindow');
-            // Only activate if settings window is closed
-            if (!textSetup || textSetup.style.display === 'none') {
+            const mazeSetup = document.getElementById('mazeSetupWindow');
+            if ((!textSetup || textSetup.style.display === 'none') &&
+                (!mazeSetup || mazeSetup.style.display === 'none')) {
                 this.classList.remove('inactive');
             }
         });
@@ -573,10 +550,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (textSetupWindow) {
         textSetupWindow.addEventListener('mousedown', function() {
-            // Settings window is always active when open
             this.classList.remove('inactive');
-            
-            // Make display properties inactive
+            if (displayWindow) {
+                displayWindow.classList.add('inactive');
+            }
+        });
+    }
+    
+    if (mazeSetupWindow) {
+        mazeSetupWindow.addEventListener('mousedown', function() {
+            this.classList.remove('inactive');
             if (displayWindow) {
                 displayWindow.classList.add('inactive');
             }
