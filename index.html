@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Windows 98 - 3D Text Screensaver</title>
+    <title>Windows 98 - Screensavers</title>
     <link rel="stylesheet" href="css/style.css">
     <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -62,8 +62,9 @@
                     <fieldset>
                         <legend>Screen Saver</legend>
                         <div class="settings-row">
-                            <select style="flex: 1;">
-                                <option>3D Text</option>
+                            <select id="screensaverSelect" style="flex: 1;" onchange="onScreensaverChange()">
+                                <option value="3dtext">3D Text</option>
+                                <option value="3dmaze">3D Maze</option>
                             </select>
                             <button class="button" id="settingsBtn" onclick="openSettings()">Settings...</button>
                             <button class="button" id="previewBtn">Preview</button>
@@ -199,12 +200,71 @@
             </div>
         </div>
 
+        <!-- 3D Maze Setup Window -->
+        <div class="window text-setup-window" id="mazeSetupWindow" style="display: none;">
+            <div class="title-bar" id="mazeSetupTitleBar">
+                <div class="title-bar-text">3D Maze Setup</div>
+                <div class="title-bar-controls">
+                    <button onclick="closeSettings()"><img src="images/close-button.png" alt="×"></button>
+                </div>
+            </div>
+            <div class="window-body">
+                <div style="display: flex; gap: 8px;">
+                    <div style="flex: 1;">
+                        <!-- Maze Size -->
+                        <fieldset>
+                            <legend>Maze Complexity</legend>
+                            <div class="slider-container">
+                                <label>Small (10x10)</label>
+                                <input type="range" class="slider" id="mazeSizeSlider" min="10" max="30" step="5" value="20">
+                                <label>Large (30x30)</label>
+                            </div>
+                            <div style="text-align: center; margin-top: 6px; color: #000;">
+                                Current: <span id="mazeSizeDisplay">20x20</span>
+                            </div>
+                        </fieldset>
+
+                        <!-- Speed -->
+                        <fieldset>
+                            <legend>Navigation Speed</legend>
+                            <div class="slider-container">
+                                <label>Slow</label>
+                                <input type="range" class="slider" id="mazeSpeedSlider" min="0.5" max="2" step="0.1" value="1">
+                                <label>Fast</label>
+                            </div>
+                        </fieldset>
+
+                        <!-- Copy URL Section -->
+                        <div class="url-section">
+                            <fieldset>
+                                <legend>OBS Browser Source URL</legend>
+                                <input type="text" class="url-input" id="mazeUrlOutput" readonly>
+                                <button class="button" id="copyMazeUrlBtn" style="width: 100%;">Copy URL to Clipboard</button>
+                            </fieldset>
+                        </div>
+
+                        <!-- Info -->
+                        <fieldset>
+                            <legend>About 3D Maze</legend>
+                            <p style="margin: 6px 0; line-height: 1.4;">
+                                The maze screensaver automatically navigates through a randomly generated maze using the right-hand rule. 
+                                Each time it runs, you'll see a different maze layout!
+                            </p>
+                        </fieldset>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 2px;">
+                        <button class="button" id="mazeOkBtn">OK</button>
+                        <button class="button" id="mazeCancelBtn">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Preview Overlay -->
         <div class="preview-overlay" id="previewOverlay">
             <canvas id="canvas3d"></canvas>
             <div id="fps" style="position: fixed; top: 10px; left: 10px; color: lime; font-family: monospace; font-size: 20px; z-index: 10000; background: rgba(0,0,0,0.5); padding: 5px;"></div>
-        </div>
-
         </div>
 
         <!-- Texture Selection Window -->
@@ -268,5 +328,6 @@
 
     <script src="js/main.js"></script>
     <script src="js/3DText.js"></script>
+    <script src="js/3DMaze.js"></script>
 </body>
 </html>
