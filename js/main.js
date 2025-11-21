@@ -521,10 +521,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordCheckbox = document.getElementById('password');
     if (passwordCheckbox) {
         passwordCheckbox.addEventListener('change', function() {
-            window.debugMode = this.checked;
+            window.debugMode = this.checked;  // For 3D Text
+            window.mazeDebugMode = this.checked;  // For 3D Maze
             const fpsDisplay = document.getElementById('fps');
             if (fpsDisplay) {
-                fpsDisplay.style.display = window.debugMode ? 'block' : 'none';
+                fpsDisplay.style.display = this.checked ? 'block' : 'none';
             }
         });
     }
