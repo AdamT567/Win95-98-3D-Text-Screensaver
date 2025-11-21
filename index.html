@@ -201,9 +201,9 @@
         </div>
 
         <!-- 3D Maze Setup Window -->
-        <div class="window text-setup-window" id="mazeSetupWindow" style="display: none;">
+        <div class="window text-setup-window" id="mazeSetupWindow" style="display: none; width: 420px;">
             <div class="title-bar" id="mazeSetupTitleBar">
-                <div class="title-bar-text">3D Maze Setup</div>
+                <div class="title-bar-text">Maze Setup</div>
                 <div class="title-bar-controls">
                     <button onclick="closeSettings()"><img src="images/close-button.png" alt="×"></button>
                 </div>
@@ -211,45 +211,64 @@
             <div class="window-body">
                 <div style="display: flex; gap: 8px;">
                     <div style="flex: 1;">
-                        <!-- Maze Size -->
-                        <fieldset>
-                            <legend>Maze Complexity</legend>
+                        <!-- Textures Section -->
+                        <fieldset style="margin-bottom: 8px;">
+                            <legend>Textures</legend>
+                            <div style="display: grid; grid-template-columns: 80px 1fr; gap: 6px; align-items: center;">
+                                <!-- Walls -->
+                                <button class="button" style="min-width: 70px;" onclick="selectMazeTexture('wall')">Walls...</button>
+                                <div id="mazeWallPreview" style="height: 40px; border: 2px inset #808080; background: repeating-linear-gradient(0deg, #8B4513 0px, #8B4513 8px, #654321 8px, #654321 10px, #8B4513 10px, #8B4513 18px, #654321 18px, #654321 20px), repeating-linear-gradient(90deg, transparent 0px, transparent 32px, #654321 32px, #654321 34px);"></div>
+                                
+                                <!-- Floor -->
+                                <button class="button" style="min-width: 70px;" onclick="selectMazeTexture('floor')">Floor...</button>
+                                <div id="mazeFloorPreview" style="height: 40px; border: 2px inset #808080; background: repeating-linear-gradient(45deg, #D2691E, #D2691E 10px, #8B4513 10px, #8B4513 20px);"></div>
+                                
+                                <!-- Ceiling -->
+                                <button class="button" style="min-width: 70px;" onclick="selectMazeTexture('ceiling')">Ceiling...</button>
+                                <div id="mazeCeilingPreview" style="height: 40px; border: 2px inset #808080; background: repeating-linear-gradient(0deg, #404040 0px, #404040 4px, #303030 4px, #303030 8px);"></div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Size -->
+                        <fieldset style="margin-bottom: 8px;">
+                            <legend>Size</legend>
                             <div class="slider-container">
-                                <label>Small (10x10)</label>
+                                <label>Min</label>
                                 <input type="range" class="slider" id="mazeSizeSlider" min="10" max="30" step="5" value="20">
-                                <label>Large (30x30)</label>
+                                <label>Max</label>
                             </div>
-                            <div style="text-align: center; margin-top: 6px; color: #000;">
-                                Current: <span id="mazeSizeDisplay">20x20</span>
-                            </div>
-                        </fieldset>
-
-                        <!-- Speed -->
-                        <fieldset>
-                            <legend>Navigation Speed</legend>
-                            <div class="slider-container">
-                                <label>Slow</label>
-                                <input type="range" class="slider" id="mazeSpeedSlider" min="0.5" max="2" step="0.1" value="1">
-                                <label>Fast</label>
+                            <div style="text-align: center; margin-top: 4px; font-size: 10px;">
+                                <span id="mazeSizeDisplay">20x20</span>
                             </div>
                         </fieldset>
 
-                        <!-- Copy URL Section -->
-                        <div class="url-section">
-                            <fieldset>
-                                <legend>OBS Browser Source URL</legend>
-                                <input type="text" class="url-input" id="mazeUrlOutput" readonly>
-                                <button class="button" id="copyMazeUrlBtn" style="width: 100%;">Copy URL to Clipboard</button>
+                        <!-- Options -->
+                        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                            <fieldset style="flex: 1; margin: 0;">
+                                <div style="margin: 4px 0;">
+                                    <input type="checkbox" id="mazeOverlay">
+                                    <label for="mazeOverlay">Maze Overlay</label>
+                                </div>
+                                <div style="margin: 4px 0;">
+                                    <input type="checkbox" id="mazeFullScreen">
+                                    <label for="mazeFullScreen">Full Screen</label>
+                                </div>
+                            </fieldset>
+                            
+                            <fieldset style="flex: 1; margin: 0;">
+                                <legend>Image Quality</legend>
+                                <div style="margin: 4px 0;">
+                                    <input type="radio" name="mazeQuality" id="mazeQualityDefault" checked>
+                                    <label for="mazeQualityDefault">Default</label>
+                                </div>
                             </fieldset>
                         </div>
 
-                        <!-- Info -->
-                        <fieldset>
-                            <legend>About 3D Maze</legend>
-                            <p style="margin: 6px 0; line-height: 1.4;">
-                                The maze screensaver automatically navigates through a randomly generated maze using the right-hand rule. 
-                                Each time it runs, you'll see a different maze layout!
-                            </p>
+                        <!-- OBS URL Section -->
+                        <fieldset style="margin-bottom: 8px;">
+                            <legend>OBS Browser Source URL</legend>
+                            <input type="text" class="url-input" id="mazeUrlOutput" readonly style="margin-bottom: 4px;">
+                            <button class="button" id="copyMazeUrlBtn" style="width: 100%;">Copy URL to Clipboard</button>
                         </fieldset>
                     </div>
 
