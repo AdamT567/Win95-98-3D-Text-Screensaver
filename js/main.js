@@ -94,11 +94,16 @@ function updateUrl() {
 // Generate URL for OBS - 3D Maze
 function updateMazeUrl() {
     const mazeSize = document.getElementById('mazeSizeSlider').value;
-    const mazeSpeed = document.getElementById('mazeSpeedSlider').value;
+    const wallTexture = window.currentMazeWallTexture || 'brick';
+    const floorTexture = window.currentMazeFloorTexture || 'wood';
+    const ceilingTexture = window.currentMazeCeilingTexture || 'ceiling';
     
     const params = new URLSearchParams({
         size: mazeSize,
-        speed: mazeSpeed
+        speed: 1, // Fixed speed for now
+        wall: wallTexture,
+        floor: floorTexture,
+        ceiling: ceilingTexture
     });
     
     const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
@@ -107,6 +112,14 @@ function updateMazeUrl() {
     console.log('Generated Maze URL:', url);
     
     document.getElementById('mazeUrlOutput').value = url;
+}
+
+// Maze texture selection
+function selectMazeTexture(type) {
+    console.log('Select texture for:', type);
+    // For now, just cycle through some basic options
+    // In a full implementation, this would open a texture selection window
+    alert(`Texture selection for ${type} - coming soon! Using default for now.`);
 }
 
 // Copy URL to clipboard - 3D Text
@@ -158,8 +171,14 @@ function resetToDefaults() {
 // Reset to defaults - 3D Maze
 function resetMazeDefaults() {
     document.getElementById('mazeSizeSlider').value = 20;
-    document.getElementById('mazeSpeedSlider').value = 1;
+    document.getElementById('mazeOverlay').checked = false;
+    document.getElementById('mazeFullScreen').checked = false;
+    document.getElementById('mazeQualityDefault').checked = true;
+    window.currentMazeWallTexture = 'brick';
+    window.currentMazeFloorTexture = 'wood';
+    window.currentMazeCeilingTexture = 'ceiling';
     updateMazeSizeDisplay();
+    updateMazeUrl();
 }
 
 // Preview button handler
@@ -424,6 +443,7 @@ window.selectGradient = selectGradient;
 window.applyTexture = applyTexture;
 window.cancelTexture = cancelTexture;
 window.onScreensaverChange = onScreensaverChange;
+window.selectMazeTexture = selectMazeTexture;
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
@@ -466,7 +486,6 @@ document.addEventListener('DOMContentLoaded', function() {
         updateMazeSizeDisplay();
         updateMazeUrl();
     });
-    document.getElementById('mazeSpeedSlider').addEventListener('input', updateMazeUrl);
     
     // Button event listeners
     document.getElementById('previewBtn').addEventListener('click', handlePreview);
