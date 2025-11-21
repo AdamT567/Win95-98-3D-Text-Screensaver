@@ -343,7 +343,7 @@ function canMove(x, z, direction) {
     return maze[z][x][direction] === 0;
 }
 
-// Get next move using right-hand rule
+// Get next move using left-hand rule (left-wall follower)
 function getNextMove() {
     const dirs = [
         { dx: 0, dz: -1 }, // North
@@ -352,14 +352,14 @@ function getNextMove() {
         { dx: -1, dz: 0 }  // West
     ];
     
-    // Right-hand rule: try right, then forward, then left, then back
-    const rightDir = (currentDirection + 1) % 4;
-    const leftDir = (currentDirection + 3) % 4;
-    const backDir = (currentDirection + 2) % 4;
+    // Left-hand rule: try left, then forward, then right, then back
+    const leftDir = (currentDirection + 3) % 4;  // Turn left (counterclockwise)
+    const rightDir = (currentDirection + 1) % 4; // Turn right (clockwise)
+    const backDir = (currentDirection + 2) % 4;  // Turn around
     
-    // Try turning right and moving
-    if (canMove(playerX, playerZ, rightDir)) {
-        return { turn: rightDir, move: true };
+    // Try turning left and moving
+    if (canMove(playerX, playerZ, leftDir)) {
+        return { turn: leftDir, move: true };
     }
     
     // Try moving forward
@@ -367,9 +367,9 @@ function getNextMove() {
         return { turn: currentDirection, move: true };
     }
     
-    // Try turning left and moving
-    if (canMove(playerX, playerZ, leftDir)) {
-        return { turn: leftDir, move: true };
+    // Try turning right and moving
+    if (canMove(playerX, playerZ, rightDir)) {
+        return { turn: rightDir, move: true };
     }
     
     // Turn around (no move)
