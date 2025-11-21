@@ -504,6 +504,7 @@ function startMazeAnimation() {
     if (animationFrame) {
         cancelAnimationFrame(animationFrame);
     }
+    lastFrameTime = performance.now(); // Initialize timing
     animateMaze();
 }
 
